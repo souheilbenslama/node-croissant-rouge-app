@@ -7,7 +7,7 @@ var mongoose= require('mongoose')  ;
 var socket = require('socket.io') ; 
 var app = express(); 
 // database connection 
-mongoose.connect("mongodb://localhost:27017/croissant-rouge-app",{ useNewUrlParser: true,useUnifiedTopology: true})
+mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test",{ useNewUrlParser: true,useUnifiedTopology: true})
 .then(()=> console.log("connected to db ...."))
 .catch(err => console.error('could not connect to MongoDb',err)) ; 
 

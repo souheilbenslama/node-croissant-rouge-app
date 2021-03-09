@@ -3,12 +3,16 @@ const mongoose = require('mongoose') ;
 
 const userSchema=new mongoose.Schema({
 
-   imei:{
+   udid:{
        type: String ,
-       required:true}  
+       required:true},
+
+    socketId:{
+        type:String , 
+    }
 })
 
 
-const User = mongoose.model("user",userSchema) ; 
+const User = mongoose.model("User",userSchema) ; 
 
-exports.USer=user ; 
+exports.User=User ; 

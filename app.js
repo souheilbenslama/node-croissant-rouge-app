@@ -6,6 +6,8 @@ var logger = require('morgan');
 var mongoose= require('mongoose')  ; 
 var socket = require('socket.io') ; 
 var app = express(); 
+var MessageService = require('./services/message_service')
+
 // database connection 
 mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test",{ useNewUrlParser: true,useUnifiedTopology: true})
 .then(()=> console.log("connected to db ...."))
@@ -14,6 +16,7 @@ mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test"
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -47,6 +50,7 @@ app.use(function(err, req, res, next) {
 var debug = require('debug')('node-croissant-rouge-app:server');
 var http = require('http');
 var socket = require('socket.io') ; 
+const { Message } = require('./models/Message');
 
 /**
  * Get port from environment and store in Express.
@@ -71,19 +75,28 @@ app.set('port', port);
 var server =app.listen(port,() => console.log("listening on port:" + port));
 
 
-
 /**
  * 
  * socket setup
  */
+
 // socket setup
 
 var io = socket(server) ; 
 
-console.log("socket.io is ready to go ") ;
-
 io.on('connection',function(socket){
-  console.log('made  socket connection')
+  console.log('made  socket connection',socket.id)
+
+  socket.on("chat",(data) => {
+   
+    MessageService.sendMessage(data);
+    
+    io.to(MessageService.getRecieverSocketId()).emit(data);
+    //socket.emit
+  }
+  
+  ) ;
+
 }) ; 
 
 /**

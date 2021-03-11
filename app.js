@@ -66,15 +66,11 @@ app.set('port', port);
 //var server = http.createServer(app);
 
 
-
 /**
  * Listen on provided port, on all network interfaces.
  */
-
  
 var server =app.listen(port,() => console.log("listening on port:" + port));
-
-
 /**
  * 
  * socket setup
@@ -86,18 +82,23 @@ var io = socket(server) ;
 
 io.on('connection',function(socket){
   console.log('made  socket connection',socket.id)
+ 
+   io.sockets.emit("t",{"message":"mmmmmmmmmmmmmm"}) ; 
 
-  socket.on("chat",(data) => {
-   
-    MessageService.sendMessage(data);
-    
-    io.to(MessageService.getRecieverSocketId()).emit(data);
-    //socket.emit
-  }
+  socket.on("chat",function(message)  {
   
-  ) ;
+   MessageService.sendMessage(message) ; 
+   
+    io.sockets.emit("chat",message) ; 
+  });  
 
-}) ; 
+
+
+
+}) ;
+
+  // messages transfert
+
 
 /**
  * Normalize a port into a number, string, or false.

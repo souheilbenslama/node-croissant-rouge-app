@@ -1,44 +1,43 @@
-const Message = require('../models/Message') ; 
-const Chat = require('../models/chat')  ; 
-const Secouriste = require('../models/secouriste') ; 
-const User = require('../models/user')
-async function sendMessage(data){s
+const {Message} = require('../models/Message') ; 
+var mongoose=require('mongoose') ; 
+const {Chat} = require('../models/chat')  ; 
+const {Secouriste} = require('../models/secouriste') ; 
+const {User} = require('../models/user');
 
-    const message = new Message({senderId:data.id,chatId:chat,content:data.message,time:data.time}) ; 
-
+// adding message to data base
+async function sendMessage(data){
     try{
-        const result = await Message.save(message) ;
-    }catch(e){
-        console.log(e); 
-    }
-}
+        //creating message object
+        const message =  new Message({senderId:data.senderId,chatId:data.chatId,content:data.content,date:data.date}); 
+        const result =  message.save();
+     } catch (e) {
+        console.log(e); }}
 
-async function getRecieverSocketId(data){
+        // done
+
+ async function getRecieverSocketId(data){
     const chatId=data.chatId ;
-    const senderId= data.Id ; 
+    const senderId= data.senderId ; 
     try{
-        const chat = await Chat.findById(chatId) ;
-        
-        if(chat.secouristeId==senderId){
+    let chat = await Chat.findById(chatId);  
+    
+    if(chat){ 
 
-            try{
-            const secouriste= await Secouriste.findById(SecouristeId) ; 
-            return secouriste.socketId ; 
-            }
-
-            catch(e){
-                console.log(e) ; 
-            }
-        }else{
-        try{
-            const reciever= await User.findById(senderId) ; 
-            return reciever.socketId ; 
-        }catch(e){
-             console.log(e) ; 
-        } }
-        
-    }  catch(e){
-        console.log(e); 
+            if(chat.secouristeId!=senderId){   
+                 let reciever=await  Secouriste.findById(chat.secouristeId)
+                     console.log(reciever.socketId) ; 
+                     return reciever.socketId ; 
+                 
+            }else{
+              
+                 let reciever= await User.findById(chat.userId) ; 
+                    console.log(reciever.socketId) ; 
+                    return reciever.socketId ; 
+                }
+                 
+        } else { console.log(" chat not found");}
+    }catch(e){
+        console.log(e) ; 
     }
 }
 

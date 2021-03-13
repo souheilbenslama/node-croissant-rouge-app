@@ -145,15 +145,15 @@ const User = require("../models/User");
  router.post(
   "/normalUser",
   async (req, res) => {
-    if (!req.body.phone) {
+    if (!req.body.userid) {
       return res.status(400).send({
         message: "Required field Phone number can not be empty",
       });
     }
-    us =await User.findOne({'phone':req.body.phone } ); 
+    us =await User.findOne({'userid':req.body.userid } ); 
     if(!us){
     const user = new User({
-      phone: req.body.phone,
+      userid: req.body.userid,
     });
     user
       .save()

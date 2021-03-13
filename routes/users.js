@@ -36,7 +36,9 @@ const User = require("../models/User");
         name: req.body.name,
         password: req.body.password,
         email: req.body.email,
-        lastname: req.body.lastname,
+        cin: req.body.cin,
+        address:req.body.address,
+        phone:req.body.phone,
         verificationCode: uuid()
     });
     await Secouriste.findOne({ email: newSecouriste.email })
@@ -193,6 +195,5 @@ router.post(
         });
       });
     }
-  
 );
 module.exports = router;

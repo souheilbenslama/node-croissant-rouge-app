@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 const SecouristeSchema = mongoose.Schema({
+    phone: {
+        type: String,
+        require: true,
+    },
     name: {
         type: String,
         require: true,
-
     },
-    lastname: {
+    cin: {
         type: String,
         require: true
     },
@@ -18,6 +21,12 @@ const SecouristeSchema = mongoose.Schema({
         require: true,
         unique: true
     },
+    address: {
+        type: String,
+        require: true,
+        unique: true
+    },
+    
     certificat: {
         type: String,
         require: false,
@@ -45,10 +54,6 @@ const SecouristeSchema = mongoose.Schema({
         default: false
     },
     verificationCode: {
-        type: String,
-        require: false,
-    },
-    phone: {
         type: String,
         require: false,
     },

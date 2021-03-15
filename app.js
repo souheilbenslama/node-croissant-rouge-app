@@ -102,10 +102,12 @@ io.on('connection',function(socket){
 
   // listenning for the disconnection event 
   socket.on('disconnect', async function(message){
-   })
+   
+  })
 
     socket.on("alerte",async function(data){
-    io.sockets.emit("notify",{"content":"your are doing ok"}) ; 
+      
+      io.sockets.emit("notify",{"content":"your are doing ok"}) ; 
      
    })
    

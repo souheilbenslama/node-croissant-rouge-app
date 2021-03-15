@@ -1,8 +1,8 @@
 const {Message} = require('../models/Message') ; 
 var mongoose=require('mongoose') ; 
 const {Chat} = require('../models/chat')  ; 
-const {Secouriste} = require('../models/secouriste') ; 
-const {User} = require('../models/user');
+const {Secouriste} = require('../models/Secouriste') ; 
+const {User} = require('../models/User');
 
 
 // adding message to data base
@@ -13,7 +13,6 @@ async function sendMessage(data){
         const result =  message.save();
      } catch (e) {
         console.log(e); }}
-
         // done
 
 
@@ -40,5 +39,6 @@ async function sendMessage(data){
         console.log(e) ; 
     }
 }
+
 
 module.exports={sendMessage , getRecieverSocketId}

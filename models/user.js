@@ -1,14 +1,8 @@
-const mongoose = require('mongoose') ; 
-
-
-const userSchema=new mongoose.Schema({
-
-   imei:{
-       type: String ,
-       required:true}  
-})
-
-
-const User = mongoose.model("user",userSchema) ; 
-
-exports.USer=user ; 
+const mongoose = require('mongoose');
+const UserSchema = mongoose.Schema({
+    phone: {
+        type: String,
+        require: false,
+    },
+}, { timestamps: true });
+module.exports = User = mongoose.model('User', UserSchema);

@@ -1,6 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const cors = require('cors');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose= require('mongoose')  ; 
@@ -10,20 +11,26 @@ var app = express();
 mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test",{ useNewUrlParser: true,useUnifiedTopology: true})
 .then(()=> console.log("connected to db ...."))
 .catch(err => console.error('could not connect to MongoDb',err)) ; 
-
-
+const passport = require('passport');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+//Passport middleware
+app.use(passport.initialize());
+require("./strategies/jsonwtStrategy")(passport);
+
+
+
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+//app.set('views', path.join(__dirname, 'views'));
+//app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+// MIDDLEWARES
+app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -41,7 +48,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  //res.render('error');
 });
 
 var debug = require('debug')('node-croissant-rouge-app:server');

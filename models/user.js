@@ -1,8 +1,18 @@
-const mongoose = require('mongoose');
-const UserSchema = mongoose.Schema({
-    phone: {
-        type: String,
-        require: false,
-    },
-}, { timestamps: true });
-module.exports = User = mongoose.model('User', UserSchema);
+const mongoose = require('mongoose') ; 
+
+
+const userSchema=new mongoose.Schema({
+
+   udid:{
+       type: String ,
+       required:true},
+
+    socketId:{
+        type:String , 
+    }
+})
+
+
+const User = mongoose.model("User",userSchema) ; 
+
+exports.User=User ; 

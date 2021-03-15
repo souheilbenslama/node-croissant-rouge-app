@@ -7,6 +7,8 @@ var logger = require('morgan');
 var mongoose= require('mongoose')  ; 
 var socket = require('socket.io') ; 
 var app = express(); 
+var MessageService = require('./services/message_service')
+
 // database connection 
 mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test",{ useNewUrlParser: true,useUnifiedTopology: true})
 .then(()=> console.log("connected to db ...."))
@@ -54,6 +56,7 @@ app.use(function(err, req, res, next) {
 var debug = require('debug')('node-croissant-rouge-app:server');
 var http = require('http');
 var socket = require('socket.io') ; 
+const { Message } = require('./models/Message');
 
 /**
  * Get port from environment and store in Express.
@@ -69,33 +72,53 @@ app.set('port', port);
 //var server = http.createServer(app);
 
 
-
 /**
  * Listen on provided port, on all network interfaces.
  */
-
  
 var server =app.listen(port,() => console.log("listening on port:" + port));
-
-
-
 /**
  * 
  * socket setup
  */
+
 // socket setup
 
 var io = socket(server) ; 
 
-console.log("socket.io is ready to go ") ;
-
+// listenning for socket connectio
 io.on('connection',function(socket){
-  console.log('made  socket connection')
-}) ; 
+ 
+  // listenning for the event chat 
+  socket.on("chat", async function(message)  {
+    
+    MessageService.sendMessage(message); //  saving the message
+    
+    const recieverSocketId= await MessageService.getRecieverSocketId(message) ; 
+    
+    io.to(recieverSocketId).emit("chat",message) ; 
+  
+  });  
 
-/**
- * Normalize a port into a number, string, or false.
- */
+  // listenning for the disconnection event 
+  socket.on('disconnect', async function(message){
+   })
+
+    socket.on("alerte",async function(data){
+    io.sockets.emit("notify",{"content":"your are doing ok"}) ; 
+     
+   })
+   
+
+}) ;
+
+
+
+
+  // messages transfert
+ /**
+  * Normalize a port into a number, string, or false.
+  */
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
@@ -155,3 +178,4 @@ function onListening() {
 
 
 module.exports = app;
+

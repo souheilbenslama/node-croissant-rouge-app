@@ -3,7 +3,6 @@ const SecouristeSchema = mongoose.Schema({
     name: {
         type: String,
         require: true,
-
     },
     lastname: {
         type: String,
@@ -12,6 +11,9 @@ const SecouristeSchema = mongoose.Schema({
     password: {
         type: String,
         require: true
+    },
+    socketId:{
+        type:String , 
     },
     email: {
         type: String,
@@ -54,4 +56,4 @@ const SecouristeSchema = mongoose.Schema({
     },
 }, { timestamps: true });
 
-module.exports = Secouriste = mongoose.model('Secouriste', SecouristeSchema);
+exports.Secouriste = mongoose.model('Secouriste', SecouristeSchema);

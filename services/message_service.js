@@ -4,6 +4,7 @@ const {Chat} = require('../models/chat')  ;
 const {Secouriste} = require('../models/secouriste') ; 
 const {User} = require('../models/user');
 
+
 // adding message to data base
 async function sendMessage(data){
     try{
@@ -15,6 +16,7 @@ async function sendMessage(data){
 
         // done
 
+
  async function getRecieverSocketId(data){
     const chatId=data.chatId ;
     const senderId= data.senderId ; 
@@ -25,13 +27,11 @@ async function sendMessage(data){
 
             if(chat.secouristeId!=senderId){   
                  let reciever=await  Secouriste.findById(chat.secouristeId)
-                     console.log(reciever.socketId) ; 
                      return reciever.socketId ; 
                  
             }else{
               
                  let reciever= await User.findById(chat.userId) ; 
-                    console.log(reciever.socketId) ; 
                     return reciever.socketId ; 
                 }
                  

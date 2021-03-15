@@ -80,29 +80,39 @@ var server =app.listen(port,() => console.log("listening on port:" + port));
 
 var io = socket(server) ; 
 
+// listenning for socket connectio
 io.on('connection',function(socket){
-  console.log('made  socket connection',socket.id)
  
-   io.sockets.emit("t",{"message":"mmmmmmmmmmmmmm"}) ; 
-
-  socket.on("chat",function(message)  {
+  // listenning for the event chat 
+  socket.on("chat", async function(message)  {
+    
+    MessageService.sendMessage(message); //  saving the message
+    
+    const recieverSocketId= await MessageService.getRecieverSocketId(message) ; 
+    
+    io.to(recieverSocketId).emit("chat",message) ; 
   
-   MessageService.sendMessage(message) ; 
-   
-    io.sockets.emit("chat",message) ; 
   });  
 
+  // listenning for the disconnection event 
+  socket.on('disconnect', async function(message){
+   })
 
-
+    socket.on("alerte",async function(data){
+    io.sockets.emit("notify",{"content":"your are doing ok"}) ; 
+     
+   })
+   
 
 }) ;
 
+
+
+
   // messages transfert
-
-
-/**
- * Normalize a port into a number, string, or false.
- */
+ /**
+  * Normalize a port into a number, string, or false.
+  */
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
@@ -162,3 +172,4 @@ function onListening() {
 
 
 module.exports = app;
+

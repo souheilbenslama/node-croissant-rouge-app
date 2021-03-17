@@ -14,6 +14,7 @@ mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test"
 const passport = require('passport');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var secouristeRouter= require ('./routes/secouriste');
 
 //Passport middleware
 app.use(passport.initialize());
@@ -34,6 +35,7 @@ app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/secouriste',secouristeRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

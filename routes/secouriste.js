@@ -15,5 +15,5 @@ router.put(
        catch (ex) {
         res.send(ex);
 }
-}
+})
 module.exports = router;

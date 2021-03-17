@@ -60,6 +60,19 @@ const SecouristeSchema = mongoose.Schema({
         type: String,
         require: false,
     },
+    longitude: {
+        type: mongoose.Decimal128,
+        require: false,
+    },
+    latitude: {
+        type: mongoose.Decimal128,
+        require: false,
+    },
+    isFree: {
+        type: Boolean,
+        require: false,
+        default: false
+    },
 }, { timestamps: true });
 
 exports.Secouriste = mongoose.model('Secouriste', SecouristeSchema);

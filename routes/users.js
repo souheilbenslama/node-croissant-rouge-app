@@ -196,4 +196,58 @@ router.post(
       });
     }
 );
+// The function to get the distance in KM using long and lat
+deg2rad = (deg)=> {
+  return deg * (Math.PI/180)
+}
+getDistanceFromLatLonInKm = (lat1,lon1,lat2,lon2) => {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1); 
+  var a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  var d = R * c; // Distance in km
+  return d;
+}
+// The function to find the closest secourists
+SerouristsFinder=  (position ,users) => {
+    var lat1 = parseFloat(position.latitude.toString());
+    var lon1 = parseFloat(position.longitude.toString());
+    us = [] ;
+    for(i=0 ; i<users.length ; i++)
+    {
+      if(users[i].isFree){
+      var lat2 = parseFloat(users[i].latitude.toString());
+      var lon2 = parseFloat(users[i].longitude.toString());
+      if(getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2)<=1) 
+      {
+        us.push(users[i]);
+      }}
+  }
+  return us ;
+}
+// The function to test the route
+findClosestSecourists = (req, res) => {
+  Secouriste.find()
+    .sort({ name: -1 })
+    .then((users) => {
+      us= SerouristsFinder(users[6], users) ;
+      console.log(us.length + " secourists are found ,the closest to mr " + users[6].email + " is " + us[0].email + " and "+ us[1].email);
+      res.status(200).send(users);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error Occured",
+      });
+    });
+};
+// This route is for testing the function  findClosestSecourists
+router.get("/test", findClosestSecourists);
+
+
+
 module.exports = router;

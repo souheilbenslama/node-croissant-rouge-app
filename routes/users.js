@@ -151,7 +151,7 @@ const {User} = require("../models/User");
       });
     }
     us =await User.findOne({'userid':req.body.userid } ); 
-    if(!us){
+    if(us){
     const user = new User({
       userid: req.body.userid,
     });

@@ -8,7 +8,6 @@ var mongoose= require('mongoose')  ;
 var socket = require('socket.io') ; 
 var app = express(); 
 var MessageService = require('./services/message_service')
-
 // database connection 
 mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test",{ useNewUrlParser: true,useUnifiedTopology: true})
 .then(()=> console.log("connected to db ...."))
@@ -16,7 +15,7 @@ mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test"
 const passport = require('passport');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var secouristeRouter= require ('./routes/secouriste');
 //Passport middleware
 app.use(passport.initialize());
 require("./strategies/jsonwtStrategy")(passport);
@@ -36,6 +35,7 @@ app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/secouriste',secouristeRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

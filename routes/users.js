@@ -196,6 +196,12 @@ router.post(
       });
     }
 );
+
+
+
+
+
+
 // The function to get the distance in KM using long and lat
 deg2rad = (deg)=> {
   return deg * (Math.PI/180)
@@ -213,7 +219,7 @@ getDistanceFromLatLonInKm = (lat1,lon1,lat2,lon2) => {
   var d = R * c; // Distance in km
   return d;
 }
-// The function to find the closest secourists
+// The function to find the closest free secourists
 SerouristsFinder=  (position ,users) => {
     var lat1 = parseFloat(position.latitude.toString());
     var lon1 = parseFloat(position.longitude.toString());
@@ -235,8 +241,9 @@ findClosestSecourists = (req, res) => {
   Secouriste.find()
     .sort({ name: -1 })
     .then((users) => {
+      // To test the route we are going to pass users[6] and try to find the closest users
       us= SerouristsFinder(users[6], users) ;
-      console.log(us.length + " secourists are found ,the closest to mr " + users[6].email + " is " + us[0].email + " and "+ us[1].email);
+      console.log(us.length + " secourists are found ,the closest to  " + users[6].email + " is " + us[0].email + " and "+ us[1].email);
       res.status(200).send(users);
     })
     .catch((err) => {

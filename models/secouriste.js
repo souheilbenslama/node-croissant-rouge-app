@@ -47,8 +47,8 @@ const SecouristeSchema = mongoose.Schema({
     //disponibility
     isFree: {
         type: Boolean,
-        require:false,
-    }
+        require: false,
+    },
     verificationCode: {
         type: String,
         require: false,

@@ -17,7 +17,7 @@ const User = require("../models/User");
 /**
  * REGISTER Route (Ajout d'un secouriste) 
  */
- router.post("/signup", [
+router.post("/signup", [
     // Secouristename must be an email
     body('email').isEmail(),
     // password must be at least 5 chars long
@@ -26,8 +26,8 @@ const User = require("../models/User");
         " one lower case, " +
         " one digit and min 8 , " +
         "max 20 char long")
-        .matches("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,20}$", "i")
-], async (req, res) => {
+    .matches("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,20}$", "i")
+], async(req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -42,7 +42,7 @@ const User = require("../models/User");
     await Secouriste.findOne({ email: newSecouriste.email })
         .then(async profile => {
             if (!profile) {
-                bcrypt.hash(newSecouriste.password, saltRounds, async (err, hash) => {
+                bcrypt.hash(newSecouriste.password, saltRounds, async(err, hash) => {
                     if (err) {
                         console.log("Error is", err.message);
                     } else {
@@ -70,67 +70,66 @@ const User = require("../models/User");
 /**
  * LOGIN Route
  */
- router.post("/login",
- async (req, res) => {
-     var newSecouriste = {};
-     newSecouriste.email = req.body.email;
-     newSecouriste.password = req.body.password;
+router.post("/login",
+    async(req, res) => {
+        var newSecouriste = {};
+        newSecouriste.email = req.body.email;
+        newSecouriste.password = req.body.password;
 
-     await Secouriste.findOne({ email: newSecouriste.email })
-         .then(profile => {
-             if (!profile) {
-                 res.status(404).send({ error: "Secouriste not exist" });
-             } else {
-                 if (!profile.isActivated) {
-                     res.status(400).send({ error: "Account not activated" });
-                 }
-                 bcrypt.compare(
-                     newSecouriste.password,
-                     profile.password,
-                     async (err, result) => {
-                         if (err) {
-                             console.log("Error is", err.message);
-                         } else if (result === true) {
-                             const payload = {
-                                 id: profile.id,
-                                 name: profile.name,
-                                 email: profile.email,
-                                 isAdmin: profile.isAdmin,
-                             };
-                             jsonwt.sign(
-                                 payload,
-                                 myKey.secret,
-                                 { expiresIn: 3600 },
-                                 (err, token) => {
-                                     return res.json({
-                                         Secouriste: payload,
-                                         success: true,
-                                         token: "Bearer " + token
-                                     });
-                                 }
-                             );
-                         } else {
-                             return res.status(401).send({ error: "Secouriste Unauthorized Access" });
-                         }
-                     }
-                 );
-             }
-         })
-         .catch(err => {
-             console.log("Error is ", err.message);
-         });
- });
+        await Secouriste.findOne({ email: newSecouriste.email })
+            .then(profile => {
+                if (!profile) {
+                    res.status(404).send({ error: "Secouriste not exist" });
+                } else {
+                    if (!profile.isActivated) {
+                        res.status(400).send({ error: "Account not activated" });
+                    }
+                    bcrypt.compare(
+                        newSecouriste.password,
+                        profile.password,
+                        async(err, result) => {
+                            if (err) {
+                                console.log("Error is", err.message);
+                            } else if (result === true) {
+                                const payload = {
+                                    id: profile.id,
+                                    name: profile.name,
+                                    email: profile.email,
+                                    isAdmin: profile.isAdmin,
+                                };
+                                jsonwt.sign(
+                                    payload,
+                                    myKey.secret, { expiresIn: 3600 },
+                                    (err, token) => {
+                                        return res.json({
+                                            Secouriste: payload,
+                                            success: true,
+                                            token: "Bearer " + token
+                                        });
+                                    }
+                                );
+                            } else {
+                                return res.status(401).send({ error: "Secouriste Unauthorized Access" });
+                            }
+                        }
+                    );
+                }
+            })
+            .catch(err => {
+                console.log("Error is ", err.message);
+            });
+    });
 
 /**
  * GET SECOURISTE PROFILE
  */
- router.get(
+router.get(
     "/profile",
     passport.authenticate("jwt", { session: false }),
-    async (req, res) => {
+    async(req, res) => {
         try {
             const Secouriste = await SecouristeService.getSecouristeById(req.user.id);
-            return res.status(200).send(Secouriste);  
+            return res.status(200).send(Secouriste);
         } catch (error) {
             return res.status(404).send({ error: 'Profile not found' });
         }
@@ -140,35 +139,35 @@ const User = require("../models/User");
 /**
  * Adding a normal User
  */
- router.post(
-  "/normalUser",
-  async (req, res) => {
-    if (!req.body.phone) {
-      return res.status(400).send({
-        message: "Required field Phone number can not be empty",
-      });
+router.post(
+    "/normalUser",
+    async(req, res) => {
+        if (!req.body.phone) {
+            return res.status(400).send({
+                message: "Required field Phone number can not be empty",
+            });
+        }
+        us = await User.findOne({ 'phone': req.body.phone });
+        if (!us) {
+            const user = new User({
+                phone: req.body.phone,
+            });
+            user
+                .save()
+                .then((data) => {
+                    res.send(data);
+                })
+                .catch((err) => {
+                    res.status(500).send({
+                        message: err.message || "Some error occurred while creating the User.",
+                    });
+                });
+        } else {
+            res.status(404).send({
+                message: "user already exists",
+            });
+        }
     }
-    us =await User.findOne({'phone':req.body.phone } ); 
-    if(!us){
-    const user = new User({
-      phone: req.body.phone,
-    });
-    user
-      .save()
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err.message || "Some error occurred while creating the User.",
-        });
-      });
-    }else{
-      res.status(404).send({
-        message:  "user already exists",
-      });
-    }
-  }
 );
 
 
@@ -176,23 +175,23 @@ const User = require("../models/User");
  * Verify a user route
  */
 router.post(
-  "/VerifyUser/:id",
-  async (req, res) => {
-    Secouriste.findByIdAndUpdate(req.params.id, {isActivated: true})
-      .then((user) => {
-        if (!user) {
-          return res.status(404).send({
-            message: "no user found",
-          });
-        }
-        res.status(200).send(user);
-      })
-      .catch((err) => {
-        return res.status(404).send({
-          message: "error while updating the user",
-        });
-      });
+    "/VerifyUser/:id",
+    async(req, res) => {
+        Secouriste.findByIdAndUpdate(req.params.id, { isActivated: true })
+            .then((user) => {
+                if (!user) {
+                    return res.status(404).send({
+                        message: "no user found",
+                    });
+                }
+                res.status(200).send(user);
+            })
+            .catch((err) => {
+                return res.status(404).send({
+                    message: "error while updating the user",
+                });
+            });
     }
-  
+
 );
 module.exports = router;

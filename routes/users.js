@@ -257,4 +257,30 @@ router.get("/test", findClosestSecourists);
 
 
 
+    // Updating user's SocketID
+    router.put(
+	    "/socket/:id",
+        async (req, res) => {
+          if (!req.body.socketId  ) {
+            res.status(400).send({
+              message: "required fields cannot be empty",
+            });
+          }
+	          var socketId = req.body.socketId ;
+            User.findByIdAndUpdate(req.params.id , {socketId: socketId}, { new: true })
+              .then((user) => {
+                if (!user) {
+                  return res.status(404).send({
+                    message: "no user found",
+                  });
+                }
+                res.status(200).send(user);
+              })
+              .catch((err) => {
+                return res.status(404).send({
+                  message: "error while updating the socketID",
+                });
+              });
+          })
+
 module.exports = router;

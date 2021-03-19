@@ -1,23 +1,17 @@
 var express = require('express');
 const Accident = require('../models/accident');
 var router = express.Router();
-router.post('/accident', async(req, res) => {
-    try {
-        console.log("etc..");
 
-        const { id } = req.body;
 
-        console.log("ça marche " + id);
 
-        /*
-        
-    "location" : "test_location",
-    "protectionDesc" : "test_protection",
-    "hemorragieDesc" : "test_hemorragie",
-    "conscienceDesc" : "test_conscience",
-    "respirationDesc" : "test_protection"
-         */
-        console.log("....;;..;");
+router.post('/', async (req, res) => {
+    
+    const {id_temoin,
+        location,
+        protectionDesc,
+        hemorragieDesc,
+        respirationDesc,conscienceDesc } = req.body ; 
+
         const accident = new Accident({
             id_temoin: id_temoin,
             location: location,
@@ -26,11 +20,18 @@ router.post('/accident', async(req, res) => {
             respirationDesc: respirationDesc,
             conscienceDesc: conscienceDesc,
         });
-        console.log(accident);
-        res.send(accident);
+  
+         console.log(accident) ; 
+
+    try {
+       
+        var result = await accident.save() ; 
+        res.send(result);
+
     } catch (ex) {
         res.send(ex);
     }
 
 });
+
 module.exports = router;

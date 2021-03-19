@@ -1,12 +1,6 @@
 //KHALIL
 const mongoose = require('mongoose');
 const AccidentSchema = mongoose.Schema({
-    id: {
-        type: String,
-        required: false,
-        unique: true,
-    },
-
     id_temoin: {
         type: String,
         required: true,
@@ -48,4 +42,5 @@ const AccidentSchema = mongoose.Schema({
         required: true,
     },
 }, { timestamps: true });
+
 module.exports = Accident = mongoose.model('Accident', AccidentSchema);

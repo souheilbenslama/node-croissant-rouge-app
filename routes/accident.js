@@ -18,7 +18,7 @@ router.get('/inprogress', async(req,res)=> {
 router.put('/finished/:id' , async(req, res) => {
     const {id}=req.params;
     try{
-        const Accident = await Accident.findbyIdAndUpdate ({_id: id},{$set: {status: "finished"}});
+        const Accident = await Accident.findbyIdAndUpdate ({_id: id},{$set: {"status": "finished"}});
         res.send(results);
     }
     catch (ex){

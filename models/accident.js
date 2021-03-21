@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
 const AccidentSchema = mongoose.Schema({
     id: {
-        type: Number,
+        type: String,
         required: false,
         unique: true,
     },
 
     id_temoin: {
-        type: Number,
+        type: String,
         required: true,
     },
 
     id_secouriste: {
-        type: int,
+        type: String,
         required: false,
     },
 

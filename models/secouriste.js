@@ -1,14 +1,11 @@
 const mongoose = require('mongoose');
 const SecouristeSchema = mongoose.Schema({
-    phone: {
-        type: String,
-        require: true,
-    },
     name: {
         type: String,
         require: true,
+
     },
-    cin: {
+    lastname: {
         type: String,
         require: true
     },
@@ -16,20 +13,11 @@ const SecouristeSchema = mongoose.Schema({
         type: String,
         require: true
     },
-    socketId:{
-        type:String , 
-    },
     email: {
         type: String,
         require: true,
         unique: true
     },
-    address: {
-        type: String,
-        require: true,
-        unique: true
-    },
-    
     certificat: {
         type: String,
         require: false,
@@ -59,12 +47,17 @@ const SecouristeSchema = mongoose.Schema({
     //disponibility
     isFree: {
         type: Boolean,
-        require:false,
+        require: false,
     },
     verificationCode: {
         type: String,
         require: false,
     },
+    phone: {
+        type: String,
+        require: false,
+    },
+
 }, { timestamps: true });
 
-exports.Secouriste = mongoose.model('Secouriste', SecouristeSchema);
+module.exports = Secouriste = mongoose.model('Secouriste', SecouristeSchema);

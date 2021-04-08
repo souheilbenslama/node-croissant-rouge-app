@@ -4,7 +4,7 @@ const mongoose = require('mongoose') ;
 const chatSchema= new mongoose.Schema({
     secouristeId : {
         type : String , 
-        required : true , 
+        required : false , 
     },
     userId : {
         type : String , 
@@ -20,7 +20,4 @@ const chatSchema= new mongoose.Schema({
 
 })
 
-
-const Chat = mongoose.model("Chat",chatSchema) ; 
-
-exports.Chat=Chat ; 
+module.exports = Chat = mongoose.model('Chat', chatSchema);

@@ -3,7 +3,6 @@ var router = express.Router();
 // Authentification imports 
 const passport = require('passport');
 const jsonwt = require('jsonwebtoken');
-const fs = require('fs');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const {Secouriste} = require('../models/Secouriste');
@@ -14,6 +13,81 @@ const constant = require('../utils/constant');
 const SecouristeService = require('../services/Secouriste.service');
 const { uuid } = require('uuidv4');
 const {User} = require("../models/User");
+
+
+
+// Batch Login 
+const csvParser = require('csv-parser');
+const fs = require('fs');
+const multer = require('multer');
+const csv = require('fast-csv');
+const upload = multer({ dest: 'tmp/csv/' });
+
+
+
+
+// Create user function 
+async function createUser(data) {
+  const newSec = new Secouriste({
+      name: data[0],
+      password: data[1],
+      email: data[2],
+      cin: data[3],
+      address:data[4],
+      verificationCode: uuid()
+  });
+  await Secouriste.findOne({ email: newSec.email })
+      .then(async profile => {
+          if (!profile) {
+              bcrypt.hash(newSec.password, saltRounds, async(err, hash) => {
+                  if (err) {
+                      console.log("Error is", err.message);
+                  } else {
+                    newSec.password = hash;
+                      await newSec
+                          .save()
+                          .then(() => {
+                              //utils.verificationEmail(newSecouriste.email, newSecouriste.verificationCode, newSecouriste._id);
+                              console.log('user added');
+                          })
+                          .catch(err => {
+                            console.log('problem while adding the user');
+                          });
+                  }
+              });
+          } else {
+            console.log('user already exists');
+          }
+      })
+      .catch(err => {
+          console.log("Error is", err.message);
+      });
+}
+
+
+
+
+// The route to add secourists in batch 
+router.post('/upload', upload.single('file'), function async (req, res) {
+  const fileRows = [];
+  console.log(req.file);
+  // open uploaded file
+  csv.parseFile(req.file.path)
+    .on("data", function (data) {
+      fileRows.push(data); // push each row
+     createUser(data);
+    })
+    .on("end", function () {
+      console.log(fileRows)
+      res.send("done");
+      //process "fileRows" and respond
+    })
+});
+
+
+
+
+
 /**
  * REGISTER Route (Ajout d'un secouriste) 
  */
@@ -281,4 +355,30 @@ router.get("/test", findClosestSecourists);
               });
           })
 
+
+
+/**
+ * Batch LOGIN Route
+ */
+ router.post("/batchLogin",
+ async(req, res) => {
+  fs.createReadStream(req.body.filepath)
+  .on('error', () => {
+      // handle error
+  })
+
+  .pipe(csvParser())
+  .on('data', (row) => {
+    console.log(row);
+  })
+
+  .on('end', () => {
+      // handle end of CSV
+  })
+
+ });
+
+
+          
 module.exports = router;
+

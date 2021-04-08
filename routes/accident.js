@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const secouriste = require("../models/secouriste");
 const Accident= require("../models/accident");
 
 //get all the interventions in progress

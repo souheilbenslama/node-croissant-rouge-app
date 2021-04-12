@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const secouriste = require("../models/secouriste");
 const Accident= require("../models/accident");
 
 //get all the interventions in progress
@@ -15,10 +14,11 @@ router.get('/inprogress', async(req,res)=> {
 }
 )
 //set the intervention's status to finished
-router.put('/finished/:id' , async(req, res) => {
-    const {id}=req.params;
+router.put('/finished/' , async(req, res) => {
+    const {id}=req.query;
+    
     try{
-        const Accident = await Accident.findbyIdAndUpdate ({_id: id},{$set: {"status": "finished"}});
+        const results = await Accident.findOneAndUpdate ({_id: id},{$set: {"status": "finished"}},{ new: true });
         res.send(results);
     }
     catch (ex){

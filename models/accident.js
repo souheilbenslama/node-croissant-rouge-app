@@ -45,13 +45,7 @@ const AccidentSchema = mongoose.Schema({
     location: {
         type: [String],
         required: true,
-<<<<<<< HEAD
-    },},
-    {timestamps: true }
-);
-=======
     },
 }, { timestamps: true });
 
->>>>>>> sprint3/addAlert
 module.exports = Accident = mongoose.model('Accident', AccidentSchema);

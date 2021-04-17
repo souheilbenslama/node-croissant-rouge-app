@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
 const AccidentSchema = mongoose.Schema({
-    id: {
-        type: String,
-        required: false,
-        unique: true,
-    },
-
     id_temoin: {
         type: String,
         required: true,
@@ -41,9 +35,12 @@ const AccidentSchema = mongoose.Schema({
         required: true,
         default: "in progress"
     },
-
-    location: {
-        type: [String],
+    latitude: {
+        type: String,
+        required: true,
+    },
+    longitude: {
+        type: String,
         required: true,
     },},
     {timestamps: true }

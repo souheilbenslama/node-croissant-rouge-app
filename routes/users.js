@@ -6,7 +6,7 @@ const jsonwt = require('jsonwebtoken');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const {Secouriste} = require('../models/Secouriste');
+const Secouriste = require('../models/Secouriste');
 const myKey = require("../mysetup/myurl");
 const { body, validationResult } = require('express-validator');
 const utils = require('../utils/utils');
@@ -177,7 +177,7 @@ router.get(
  */
 router.post(
     "/VerifyUser/:id",
-    async(req, res) => {
+    async (req, res) => {
         Secouriste.findByIdAndUpdate(req.params.id, { isActivated: true })
             .then((user) => {
                 if (!user) {
@@ -253,7 +253,19 @@ findClosestSecourists = (req, res) => {
 // This route is for testing the function  findClosestSecourists
 router.get("/test", findClosestSecourists);
 
-
+// Getting all the secourists
+router.get('/list', async (req,res)=> {
+  try{
+      const results = await Secouriste.find();
+      console.log("results = " + results);
+      res.send(results);
+  }
+  catch (ex){
+    console.log(ex);
+      res.send(ex);
+  }
+}
+)
 
     // Updating user's SocketID
     router.put(

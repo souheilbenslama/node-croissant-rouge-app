@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const secouriste = require("../models/secouriste");
 const Accident= require("../models/accident");
 
 //get all the interventions in progress
@@ -29,14 +28,16 @@ router.put('/finished/:id' , async(req, res) => {
 router.post('/', async (req, res) => {
     
     const {id_temoin,
-        location,
+        longitude,
+        latitude,
         protectionDesc,
         hemorragieDesc,
         respirationDesc,conscienceDesc } = req.body ; 
 
         const accident = new Accident({
             id_temoin: id_temoin,
-            location: location,
+            longitude: longitude,
+            latitude: latitude,
             protectionDesc: protectionDesc,
             hemorragieDesc: hemorragieDesc,
             respirationDesc: respirationDesc,
@@ -48,10 +49,10 @@ router.post('/', async (req, res) => {
     try {
        
         var result = await accident.save() ; 
+        print(result);
         res.send(result);
         setTimeout(function(){
             accident.update({$set: {"status": "Finished"}});
-
         },3600000)
 
     } catch (ex) {

@@ -47,7 +47,7 @@ const SecouristeSchema = mongoose.Schema({
     //disponibility
     isFree: {
         type: Boolean,
-        require: false,
+        default: false,
     },
     verificationCode: {
         type: String,
@@ -56,7 +56,18 @@ const SecouristeSchema = mongoose.Schema({
     phone: {
         type: String,
         require: false,
+    },longitude: {
+        type: Number,
+        required: true,
     },
+    latitude:{
+        type: Number,
+        required: true,
+    },socketId:{
+        type: String,
+        require: false,
+        default : null
+    }
 
 }, { timestamps: true });
 

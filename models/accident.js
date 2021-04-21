@@ -41,11 +41,14 @@ const AccidentSchema = mongoose.Schema({
         required: true,
         default: "in progress"
     },
-
-    location: {
-        type: [String],
+    longitude: {
+        type: Number,
         required: true,
     },
+    latitude:{
+        type: Number,
+        required: true,
+    }
 }, { timestamps: true });
 
 module.exports = Accident = mongoose.model('Accident', AccidentSchema);

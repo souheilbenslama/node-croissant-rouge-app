@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
+
 // Authentification imports 
 const passport = require('passport');
 const jsonwt = require('jsonwebtoken');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const {Secouriste} = require('../models/Secouriste');
+const Secouriste = require('../models/Secouriste');
 const myKey = require("../mysetup/myurl");
 const { body, validationResult } = require('express-validator');
 const utils = require('../utils/utils');
@@ -14,9 +15,12 @@ const constant = require('../utils/constant');
 const SecouristeService = require('../services/Secouriste.service');
 const { uuid } = require('uuidv4');
 const {User} = require("../models/User");
+
 /**
  * REGISTER Route (Ajout d'un secouriste) 
  */
+
+
 router.post("/signup", [
     // Secouristename must be an email
     body('email').isEmail(),

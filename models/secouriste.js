@@ -70,5 +70,4 @@ const SecouristeSchema = mongoose.Schema({
     }
 
 }, { timestamps: true });
-
-module.exports = Secouriste = mongoose.model('Secouriste', SecouristeSchema);
+exports.Secouriste = mongoose.model('Secouriste', SecouristeSchema);

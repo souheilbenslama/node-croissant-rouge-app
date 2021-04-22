@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const Accident= require("../models/accident");
-const Chat= require("../models/chat");
+const Chat= require("../models/Chat");
 var mongoose = require('mongoose');
 const passport = require('passport');
 

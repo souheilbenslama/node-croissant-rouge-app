@@ -254,6 +254,7 @@ findClosestSecourists = (req, res) => {
 router.get("/test", findClosestSecourists);
 
 // Getting all the secourists
+//verified
 router.get('/list', async (req,res)=> {
   try{
       const results = await Secouriste.find();

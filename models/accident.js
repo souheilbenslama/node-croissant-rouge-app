@@ -44,6 +44,7 @@ const AccidentSchema = mongoose.Schema({
     longitude: {
         type: Number,
         required: true,
+<<<<<<< HEAD
     },
     latitude:{
         type: Number,
@@ -51,4 +52,9 @@ const AccidentSchema = mongoose.Schema({
     }
 }, { timestamps: true });
 
+=======
+    },},
+    {timestamps: true }
+);
+>>>>>>> sprint5/AccidentRoute
 module.exports = Accident = mongoose.model('Accident', AccidentSchema);

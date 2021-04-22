@@ -6,6 +6,7 @@ const UserSchema = mongoose.Schema({
     },
     socketId:{
         type:String , 
+        default:null
     }
 }, { timestamps: true });
 

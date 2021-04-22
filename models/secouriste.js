@@ -58,11 +58,11 @@ const SecouristeSchema = mongoose.Schema({
         require: false,
     },longitude: {
         type: Number,
-        required: true,
+        default:null
     },
     latitude:{
         type: Number,
-        required: true,
+        default:null,
     },socketId:{
         type: String,
         require: false,

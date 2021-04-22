@@ -60,7 +60,7 @@ router.post("/signup", [
                                 return res.status(200).send({ response: `Secouriste Created Successfully, Welcome ${newSecouriste.name}` });
                             })
                             .catch(err => {
-                                return res.status(400).send({ error: 'Cannot create Secouriste with such data !' });
+                                return res.status(400).send({ error: 'Cannot create Secouriste with such data !'+err });
                             });
                     }
                 });
@@ -128,6 +128,7 @@ router.post("/login",
 
 /**
  * GET SECOURISTE PROFILE
+ * verified and need only some modifications in returned user attributes
  */
 router.get(
     "/profile",
@@ -178,12 +179,14 @@ router.get(
 
 /**
  * Verify a user route
+ * verified
  */
 router.post(
-    "/VerifyUser/:id",
+    "/VerifyUser",
     async(req, res) => {
-        Secouriste.findByIdAndUpdate(req.params.id, { isActivated: true })
+        Secouriste.findByIdAndUpdate(req.query.id, {$set: { isActivated: true }},{ new: true })
             .then((user) => {
+              console.log(user);
                 if (!user) {
                     return res.status(404).send({
                         message: "no user found",
@@ -198,8 +201,6 @@ router.post(
             });
     }
 );
-
-
 
 
 
@@ -221,6 +222,8 @@ getDistanceFromLatLonInKm = (lat1,lon1,lat2,lon2) => {
   var d = R * c; // Distance in km
   return d;
 }
+
+
 // The function to find the closest free secourists
 SerouristsFinder=  (position ,users) => {
     var lat1 = parseFloat(position.latitude.toString());
@@ -238,6 +241,7 @@ SerouristsFinder=  (position ,users) => {
   }
   return us ;
 }
+
 // The function to test the route
 findClosestSecourists = (req, res) => {
   Secouriste.find()
@@ -254,14 +258,16 @@ findClosestSecourists = (req, res) => {
       });
     });
 };
+
 // This route is for testing the function  findClosestSecourists
 router.get("/test", findClosestSecourists);
 
 
 
     // Updating user's SocketID
+    // verified
     router.put(
-	    "/socket/:id",
+	    "/socket",
         async (req, res) => {
           if (!req.body.socketId  ) {
             res.status(400).send({
@@ -269,7 +275,7 @@ router.get("/test", findClosestSecourists);
             });
           }
 	          var socketId = req.body.socketId ;
-            User.findByIdAndUpdate(req.params.id , {socketId: socketId}, { new: true })
+            User.findByIdAndUpdate(req.query.id , {socketId: socketId}, { new: true })
               .then((user) => {
                 if (!user) {
                   return res.status(404).send({

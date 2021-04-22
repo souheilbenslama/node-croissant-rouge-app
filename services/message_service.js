@@ -1,7 +1,7 @@
-const {Message} = require('../models/Message') ; 
 var mongoose=require('mongoose') ; 
-const {Chat} = require('../models/chat')  ; 
-const {Secouriste} = require('../models/Secouriste') ; 
+const Message = require('../models/Message') ; 
+const Chat = require('../models/Chat')  ; 
+const Secouriste = require('../models/Secouriste') ; 
 const {User} = require('../models/User');
 
 

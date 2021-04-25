@@ -39,6 +39,7 @@ router.post("/signup", [
         cin: req.body.cin,
         address:req.body.address,
         phone:req.body.phone,
+        isNormalUser:req.body.isNormalUser,
         verificationCode: uuid()
     });
     await Secouriste.findOne({ email: newSecouriste.email })

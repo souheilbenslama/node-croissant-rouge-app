@@ -6,7 +6,7 @@ const passport = require('passport');
 const jsonwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const Secouriste = require('../models/Secouriste');
+const {Secouriste} = require('../models/Secouriste');
 const myKey = require("../mysetup/myurl");
 const { body, validationResult } = require('express-validator');
 const utils = require('../utils/utils');
@@ -107,6 +107,7 @@ router.post("/signup", [
 ], async(req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors);
         return res.status(400).json({ errors: errors.array() });
     }
     const newSecouriste = new Secouriste({
@@ -116,6 +117,7 @@ router.post("/signup", [
         cin: req.body.cin,
         address:req.body.address,
         phone:req.body.phone,
+        isNormalUser:req.body.isNormalUser,
         verificationCode: uuid()
     });
     await Secouriste.findOne({ email: newSecouriste.email })
@@ -160,9 +162,9 @@ router.post("/login",
                 if (!profile) {
                     res.status(404).send({ error: "Secouriste not exist" });
                 } else {
-                    if (!profile.isActivated) {
-                        res.status(400).send({ error: "Account not activated" });
-                    }
+                   // if (!profile.isActivated) {
+                   //     res.status(400).send({ error: "Account not activated" });
+                   // }
                     bcrypt.compare(
                         newSecouriste.password,
                         profile.password,
@@ -175,6 +177,8 @@ router.post("/login",
                                     name: profile.name,
                                     email: profile.email,
                                     isAdmin: profile.isAdmin,
+                                    isActivated:profile.isActivated,
+                                    isNormalUser:profile.isNormalUser
                                 };
                                 jsonwt.sign(
                                     payload,
@@ -188,6 +192,7 @@ router.post("/login",
                                     }
                                 );
                             } else {
+
                                 return res.status(401).send({ error: "Secouriste Unauthorized Access" });
                             }
                         }

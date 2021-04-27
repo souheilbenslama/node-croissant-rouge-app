@@ -79,5 +79,23 @@ var express = require('express');
                 });
               });
           })
+//////
+router.put(
+  "/rate",
+  async (req, res) => {
+      try{
+      const id = req.body.id;
+      let rating=req.body.rating;
+      secouriste1= await Secouriste.findById({ _id: id });
+      raters1 = secouriste1.raters + 1 ;
+      sum = secouriste1.sumRatings + rating ;
+      note1 = Math.round(sum/raters1) ;
+      secouriste = await Secouriste.findByIdAndUpdate({ _id: id },{$set: {note: note1 , raters : raters1,sumRatings:sum }},{ new: true });
+      res.send(secouriste);
+  }
+     catch (ex) {
+      res.send(ex);
+}
+})
 
 	module.exports = router;

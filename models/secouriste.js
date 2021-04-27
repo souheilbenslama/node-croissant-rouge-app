@@ -67,7 +67,23 @@ const SecouristeSchema = mongoose.Schema({
         type: String,
         require: false,
         default : null
-    }
+    },
 
+    isNormalUser:{
+        type:Boolean,
+        default:false
+    },
+    note:{
+        type:Number,
+        default:0
+    },
+    raters:{
+        type:Number,
+        default:0
+    },
+    sumRatings:{
+        type:Number,
+        default:0
+    }
 }, { timestamps: true });
 exports.Secouriste = mongoose.model('Secouriste', SecouristeSchema);

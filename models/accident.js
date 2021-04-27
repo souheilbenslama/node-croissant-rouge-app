@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
 const AccidentSchema = mongoose.Schema({
-    id: {
-        type: String,
-        required: false,
-        unique: true,
-    },
-
     id_temoin: {
         type: String,
         required: true,

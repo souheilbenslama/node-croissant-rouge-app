@@ -94,6 +94,7 @@ var io = socket(server);
 // listenning for socket connectio
 io.on('connection',function(socket){
  
+    console.log("connection"+socket.id);
   // listenning for the event chat 
   socket.on("chat", async function(message)  {
     
@@ -108,6 +109,7 @@ io.on('connection',function(socket){
   // listenning for the disconnection event 
   socket.on('disconnect', async function(message){
    
+    console.log("disconnected"+socket.id) ;
   })
 
     socket.on("alerte",async function(data){

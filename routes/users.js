@@ -6,7 +6,7 @@ const jsonwt = require('jsonwebtoken');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const {Secouriste} = require('../models/Secouriste');
+const Secouriste = require('../models/Secouriste');
 const myKey = require("../mysetup/myurl");
 const { body, validationResult } = require('express-validator');
 const utils = require('../utils/utils');
@@ -101,7 +101,7 @@ router.post("/login",
                                 };
                                 jsonwt.sign(
                                     payload,
-                                    myKey.secret, { expiresIn: 3600 },
+                                    myKey.secret,
                                     (err, token) => {
                                         return res.json({
                                             Secouriste: payload,

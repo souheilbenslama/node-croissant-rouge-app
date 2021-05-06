@@ -9,7 +9,7 @@ var socket = require('socket.io') ;
 var app = express(); 
 var MessageService = require('./services/message_service')
 // database connection 
-mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test", { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false  })
     .then(() => console.log("connected to db ...."))
     .catch(err => console.error('could not connect to MongoDb', err));
 const passport = require('passport');

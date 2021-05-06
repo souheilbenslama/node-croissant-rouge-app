@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
 const AccidentSchema = mongoose.Schema({
-    id: {
-        type: String,
-        required: false,
-        unique: true,
-    },
-
     id_temoin: {
         type: String,
         required: true,
@@ -41,11 +35,14 @@ const AccidentSchema = mongoose.Schema({
         required: true,
         default: "in progress"
     },
-
-    location: {
-        type: [String],
+    longitude: {
+        type: Number,
         required: true,
     },
+    latitude:{
+        type: Number,
+        required: true,
+    }
 }, { timestamps: true });
 
 module.exports = Accident = mongoose.model('Accident', AccidentSchema);

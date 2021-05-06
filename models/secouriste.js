@@ -51,7 +51,7 @@ const SecouristeSchema = mongoose.Schema({
     //disponibility
     isFree: {
         type: Boolean,
-        require: false,
+        default: false,
     },
     verificationCode: {
         type: String,
@@ -60,8 +60,34 @@ const SecouristeSchema = mongoose.Schema({
     phone: {
         type: String,
         require: false,
+    },longitude: {
+        type: Number,
+        default:null
+    },
+    latitude:{
+        type: Number,
+        default:null,
+    },socketId:{
+        type: String,
+        require: false,
+        default : null
     },
 
+    isNormalUser:{
+        type:Boolean,
+        default:false
+    },
+    note:{
+        type:Number,
+        default:0
+    },
+    raters:{
+        type:Number,
+        default:0
+    },
+    sumRatings:{
+        type:Number,
+        default:0
+    }
 }, { timestamps: true });
-
-module.exports = Secouriste = mongoose.model('Secouriste', SecouristeSchema);
+exports.Secouriste = mongoose.model('Secouriste', SecouristeSchema);

@@ -2,7 +2,9 @@ var express = require('express');
 	var router = express.Router();
   const Secouriste = require('../models/Secouriste');
   const passport = require('passport');
+
 	//updating rescuer's disponibility 
+  // verified
 	router.put(
 	    "/disponibility",
       passport.authenticate("jwt", { session: false }),
@@ -10,27 +12,31 @@ var express = require('express');
 	        try{
 	        const id = req.user.id;
 	        let {isFree}=req.body;
-	        secouriste = await Secouriste.findByIdAndUpdate({ _id: id },{$set: {isFree: isFree}});
-	        res.send(secouriste);
+          
+	        secouriste = await Secouriste.findByIdAndUpdate({ _id: id },{$set: {isFree: isFree}},{ new: true });
+	        
+          res.send(secouriste);
 	    }
 	       catch (ex) {
 	        res.send(ex);
 	}
 	})
+
     // Updating rescuer's location
+    // verified working
     router.put(
 	    "/location",
-        passport.authenticate("jwt", { session: false }),
+      passport.authenticate("jwt", { session: false }),
         async (req, res) => {
           if (!req.body.longitude || !req.body.latitude ) {
             res.status(400).send({
               message: "required fields cannot be empty",
             });
           }
-	          var longitude = req.body.longitude ;
+            var longitude = req.body.longitude ;
             var latitude = req.body.latitude ;
-            Secouriste.findByIdAndUpdate(req.user.id, {longitude: longitude , latitude: latitude}, { new: true })
-              .then((user) => {
+             const secouriste = await  Secouriste.findByIdAndUpdate({ _id: req.user.id }, {$set: {longitude: longitude,latitude:latitude}}, { new: true })
+            .then((user) => {
                 if (!user) {
                   return res.status(404).send({
                     message: "no user found",
@@ -44,7 +50,10 @@ var express = require('express');
                 });
               });
           })
-           // Updating rescuer's SocketID
+          
+  
+        // Updating rescuer's SocketID
+        //verified and working 
     router.put(
 	    "/socket",
         passport.authenticate("jwt", { session: false }),
@@ -70,4 +79,23 @@ var express = require('express');
                 });
               });
           })
+//////
+router.put(
+  "/rate",
+  async (req, res) => {
+      try{
+      const id = req.body.id;
+      let rating=req.body.rating;
+      secouriste1= await Secouriste.findById({ _id: id });
+      raters1 = secouriste1.raters + 1 ;
+      sum = secouriste1.sumRatings + rating ;
+      note1 = Math.round(sum/raters1) ;
+      secouriste = await Secouriste.findByIdAndUpdate({ _id: id },{$set: {note: note1 , raters : raters1,sumRatings:sum }},{ new: true });
+      res.send(secouriste);
+  }
+     catch (ex) {
+      res.send(ex);
+}
+})
+
 	module.exports = router;

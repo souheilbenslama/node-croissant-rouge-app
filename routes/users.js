@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
+
 // Authentification imports 
 const passport = require('passport');
 const jsonwt = require('jsonwebtoken');
-const fs = require('fs');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const Secouriste = require('../models/Secouriste');
@@ -14,9 +14,86 @@ const constant = require('../utils/constant');
 const SecouristeService = require('../services/Secouriste.service');
 const { uuid } = require('uuidv4');
 const {User} = require("../models/User");
+
+
+
+// Batch Login 
+const csvParser = require('csv-parser');
+const fs = require('fs');
+const multer = require('multer');
+const csv = require('fast-csv');
+const upload = multer({ dest: 'tmp/csv/' });
+
+
+
+
+// Create user function 
+async function createUser(data) {
+  const newSec = new Secouriste({
+      name: data[0],
+      password: data[1],
+      email: data[2],
+      cin: data[3],
+      address:data[4],
+      verificationCode: uuid()
+  });
+  await Secouriste.findOne({ email: newSec.email })
+      .then(async profile => {
+          if (!profile) {
+              bcrypt.hash(newSec.password, saltRounds, async(err, hash) => {
+                  if (err) {
+                      console.log("Error is", err.message);
+                  } else {
+                    newSec.password = hash;
+                      await newSec
+                          .save()
+                          .then(() => {
+                              //utils.verificationEmail(newSecouriste.email, newSecouriste.verificationCode, newSecouriste._id);
+                              console.log('user added');
+                          })
+                          .catch(err => {
+                            console.log('problem while adding the user');
+                          });
+                  }
+              });
+          } else {
+            console.log('user already exists');
+          }
+      })
+      .catch(err => {
+          console.log("Error is", err.message);
+      });
+}
+
+
+
+
+// The route to add secourists in batch 
+router.post('/upload', upload.single('file'), function async (req, res) {
+  const fileRows = [];
+  console.log(req.file);
+  // open uploaded file
+  csv.parseFile(req.file.path)
+    .on("data", function (data) {
+      fileRows.push(data); // push each row
+     createUser(data);
+    })
+    .on("end", function () {
+      console.log(fileRows)
+      res.send("done");
+      //process "fileRows" and respond
+    })
+});
+
+
+
+
+
 /**
  * REGISTER Route (Ajout d'un secouriste) 
  */
+
+
 router.post("/signup", [
     // Secouristename must be an email
     body('email').isEmail(),
@@ -30,6 +107,7 @@ router.post("/signup", [
 ], async(req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors);
         return res.status(400).json({ errors: errors.array() });
     }
     const newSecouriste = new Secouriste({
@@ -39,6 +117,7 @@ router.post("/signup", [
         cin: req.body.cin,
         address:req.body.address,
         phone:req.body.phone,
+        isNormalUser:req.body.isNormalUser,
         verificationCode: uuid()
     });
     await Secouriste.findOne({ email: newSecouriste.email })
@@ -56,7 +135,7 @@ router.post("/signup", [
                                 return res.status(200).send({ response: `Secouriste Created Successfully, Welcome ${newSecouriste.name}` });
                             })
                             .catch(err => {
-                                return res.status(400).send({ error: 'Cannot create Secouriste with such data !' });
+                                return res.status(400).send({ error: 'Cannot create Secouriste with such data !'+err });
                             });
                     }
                 });
@@ -83,9 +162,9 @@ router.post("/login",
                 if (!profile) {
                     res.status(404).send({ error: "Secouriste not exist" });
                 } else {
-                    if (!profile.isActivated) {
-                        res.status(400).send({ error: "Account not activated" });
-                    }
+                   // if (!profile.isActivated) {
+                   //     res.status(400).send({ error: "Account not activated" });
+                   // }
                     bcrypt.compare(
                         newSecouriste.password,
                         profile.password,
@@ -98,6 +177,8 @@ router.post("/login",
                                     name: profile.name,
                                     email: profile.email,
                                     isAdmin: profile.isAdmin,
+                                    isActivated:profile.isActivated,
+                                    isNormalUser:profile.isNormalUser
                                 };
                                 jsonwt.sign(
                                     payload,
@@ -111,6 +192,7 @@ router.post("/login",
                                     }
                                 );
                             } else {
+
                                 return res.status(401).send({ error: "Secouriste Unauthorized Access" });
                             }
                         }
@@ -124,6 +206,7 @@ router.post("/login",
 
 /**
  * GET SECOURISTE PROFILE
+ * verified and need only some modifications in returned user attributes
  */
 router.get(
     "/profile",
@@ -174,12 +257,14 @@ router.get(
 
 /**
  * Verify a user route
+ * verified
  */
 router.post(
-    "/VerifyUser/:id",
+    "/VerifyUser",
     async(req, res) => {
-        Secouriste.findByIdAndUpdate(req.params.id, { isActivated: true })
+        Secouriste.findByIdAndUpdate(req.query.id, {$set: { isActivated: true }},{ new: true })
             .then((user) => {
+              console.log(user);
                 if (!user) {
                     return res.status(404).send({
                         message: "no user found",
@@ -194,8 +279,6 @@ router.post(
             });
     }
 );
-
-
 
 
 
@@ -217,6 +300,8 @@ getDistanceFromLatLonInKm = (lat1,lon1,lat2,lon2) => {
   var d = R * c; // Distance in km
   return d;
 }
+
+
 // The function to find the closest free secourists
 SerouristsFinder=  (position ,users) => {
     var lat1 = parseFloat(position.latitude.toString());
@@ -234,6 +319,7 @@ SerouristsFinder=  (position ,users) => {
   }
   return us ;
 }
+
 // The function to test the route
 findClosestSecourists = (req, res) => {
   Secouriste.find()
@@ -250,14 +336,29 @@ findClosestSecourists = (req, res) => {
       });
     });
 };
+
 // This route is for testing the function  findClosestSecourists
 router.get("/test", findClosestSecourists);
 
-
+// Getting all the secourists
+//verified
+router.get('/list', async (req,res)=> {
+  try{
+      const results = await Secouriste.find();
+      console.log("results = " + results);
+      res.send(results);
+  }
+  catch (ex){
+    console.log(ex);
+      res.send(ex);
+  }
+}
+)
 
     // Updating user's SocketID
+    // verified
     router.put(
-	    "/socket/:id",
+	    "/socket",
         async (req, res) => {
           if (!req.body.socketId  ) {
             res.status(400).send({
@@ -265,7 +366,7 @@ router.get("/test", findClosestSecourists);
             });
           }
 	          var socketId = req.body.socketId ;
-            User.findByIdAndUpdate(req.params.id , {socketId: socketId}, { new: true })
+            User.findByIdAndUpdate(req.query.id , {socketId: socketId}, { new: true })
               .then((user) => {
                 if (!user) {
                   return res.status(404).send({
@@ -281,4 +382,30 @@ router.get("/test", findClosestSecourists);
               });
           })
 
+
+
+/**
+ * Batch LOGIN Route
+ */
+ router.post("/batchLogin",
+ async(req, res) => {
+  fs.createReadStream(req.body.filepath)
+  .on('error', () => {
+      // handle error
+  })
+
+  .pipe(csvParser())
+  .on('data', (row) => {
+    console.log(row);
+  })
+
+  .on('end', () => {
+      // handle end of CSV
+  })
+
+ });
+
+
+          
 module.exports = router;
+

@@ -37,13 +37,16 @@ async function createUser(data) {
       address:data[4],
       verificationCode: uuid()
   });
+  console.log("///////////////////$$$");
   await Secouriste.findOne({ email: newSec.email })
       .then(async profile => {
           if (!profile) {
+            console.log("///////////////////");
               bcrypt.hash(newSec.password, saltRounds, async(err, hash) => {
                   if (err) {
                       console.log("Error is", err.message);
                   } else {
+                    console.log("///////////////////*");
                     newSec.password = hash;
                       await newSec
                           .save()
@@ -135,6 +138,7 @@ router.post("/signup", [
                                 return res.status(200).send({ response: `Secouriste Created Successfully, Welcome ${newSecouriste.name}` });
                             })
                             .catch(err => {
+                              console.log(err);
                                 return res.status(400).send({ error: 'Cannot create Secouriste with such data !'+err });
                             });
                     }

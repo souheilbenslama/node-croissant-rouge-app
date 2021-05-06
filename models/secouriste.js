@@ -67,7 +67,8 @@ const SecouristeSchema = mongoose.Schema({
     latitude:{
         type: Number,
         default:null,
-    },socketId:{
+    }
+    ,socketId:{
         type: String,
         require: false,
         default : null

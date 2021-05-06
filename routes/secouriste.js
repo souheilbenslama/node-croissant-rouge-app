@@ -1,6 +1,6 @@
 var express = require('express');
 	var router = express.Router();
-  const Secouriste = require('../models/Secouriste');
+  const {Secouriste} = require('../models/Secouriste');
   const passport = require('passport');
 
 	//updating rescuer's disponibility 
@@ -67,13 +67,16 @@ var express = require('express');
             Secouriste.findByIdAndUpdate(req.user.id, {socketId: socketId}, { new: true })
               .then((user) => {
                 if (!user) {
+                  console.log("no user ") ;
                   return res.status(404).send({
                     message: "no user found",
                   });
+                }else{
+                  return res.status(200).send(user);
                 }
-                res.status(200).send(user);
               })
               .catch((err) => {
+                console.log(err) ; 
                 return res.status(404).send({
                   message: "error while updating the socketID",
                 });

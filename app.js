@@ -104,7 +104,9 @@ io.on('connection',function(socket){
     
     io.to(recieverSocketId).emit("chat",message) ; 
   
-  });  
+  });
+  
+  
 
   // listenning for the disconnection event 
   socket.on('disconnect', async function(message){
@@ -113,7 +115,7 @@ io.on('connection',function(socket){
   })
 
     socket.on("alerte",async function(data){
-      
+      console.log(data) ; 
       io.sockets.emit("notify",{"content":"your are doing ok"}) ; 
      
    })

@@ -49,9 +49,7 @@ async function deletSocketId(socketId){
             if(chat.secouristeId!=senderId){   
                  let reciever=await  Secouriste.findById(chat.secouristeId)
                      return reciever.socketId ; 
-                 
             }else{
-              
                  let reciever= await User.findById(chat.userId) ; 
                     return reciever.socketId ; 
                 }

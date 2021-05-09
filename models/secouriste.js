@@ -5,7 +5,7 @@ const SecouristeSchema = mongoose.Schema({
         require: true,
 
     },
-    lastname: {
+    gouvernorat: {
         type: String,
         require: true
     },
@@ -38,6 +38,9 @@ const SecouristeSchema = mongoose.Schema({
     description: {
         type: String,
         require: false
+    },cin: {
+        type: String,
+        require: false
     },
     isActivated: {
         type: Boolean,
@@ -55,7 +58,7 @@ const SecouristeSchema = mongoose.Schema({
     },
     phone: {
         type: String,
-        require: false,
+        require: true,
     },longitude: {
         type: Number,
         default:null
@@ -72,7 +75,7 @@ const SecouristeSchema = mongoose.Schema({
 
     isNormalUser:{
         type:Boolean,
-        default:false
+        default:true
     },
     note:{
         type:Number,

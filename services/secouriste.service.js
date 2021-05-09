@@ -1,14 +1,17 @@
-const Secouriste = require('../models/Secouriste');
+const {Secouriste} = require('../models/Secouriste');
 async function getSecouristeById(id) {
     const secouriste = await Secouriste.findOne({'_id': id});
     return {
         id: secouriste.id,
         name: secouriste.name,
-        lastname: secouriste.lastname,
+        gouvernorat: secouriste.gouvernorat,
         email: secouriste.email,
-        //phone: Secouriste.phone,
+        phone: Secouriste.phone,
         isAdmin: secouriste.isAdmin,
         age: secouriste.age,
+        isActivated:secouriste.isActivated,
+        isNormalUser:secouriste.isNormalUser,
+        isFree:secouriste.isFree,
         //certificat: Secouriste.certificat,
         //yearsOfExperience: Secouriste.yearsOfExperience,
         //description: Secouriste.description,

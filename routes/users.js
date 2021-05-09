@@ -34,7 +34,7 @@ async function createUser(data) {
       password: data[1],
       email: data[2],
       cin: data[3],
-      address:data[4],
+      gouvernorat:data[4],
       verificationCode: uuid()
   });
   console.log("///////////////////$$$");
@@ -118,7 +118,8 @@ router.post("/signup", [
         password: req.body.password,
         email: req.body.email,
         cin: req.body.cin,
-        address:req.body.address,
+        age:req.body.age,
+        gouvernorat:req.body.gouvernorat,
         phone:req.body.phone,
         isNormalUser:req.body.isNormalUser,
         verificationCode: uuid()
@@ -180,13 +181,17 @@ router.post("/login",
                                     id: profile.id,
                                     name: profile.name,
                                     email: profile.email,
+                                    age:profile.age,
+                                    phone:profile.phone,
+                                    cin:profile.cin,
+                                    gouvernorat:profile.gouvernorat,
                                     isAdmin: profile.isAdmin,
                                     isActivated:profile.isActivated,
                                     isNormalUser:profile.isNormalUser
                                 };
                                 jsonwt.sign(
                                     payload,
-                                    myKey.secret, { expiresIn: 3600 },
+                                    myKey.secret,
                                     (err, token) => {
                                         return res.json({
                                             Secouriste: payload,
@@ -218,9 +223,29 @@ router.get(
     async(req, res) => {
         try {
             const Secouriste = await SecouristeService.getSecouristeById(req.user.id);
-            return res.status(200).send(Secouriste);
+
+            const payload = {
+              id: Secouriste.id,
+              name: Secouriste.name,
+              email: Secouriste.email,
+              isAdmin: Secouriste.isAdmin,
+              isActivated:Secouriste.isActivated,
+              isNormalUser:Secouriste.isNormalUser
+          };
+          jsonwt.sign(
+              payload,
+              myKey.secret,
+              (err, token) => {
+                  return res.status(200).json({
+                      Secouriste: payload,
+                      success: true,
+                      token: "Bearer " + token
+                  });
+              }
+          );
         } catch (error) {
-            return res.status(404).send({ error: 'Profile not found' });
+                    console.log(error);
+          return res.status(404).send({ error: 'Profile not found' });
         }
     }
 );

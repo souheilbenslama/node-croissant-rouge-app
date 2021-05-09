@@ -153,6 +153,76 @@ router.post("/signup", [
         });
 });
 
+
+
+router.post("/update",passport.authenticate("jwt", { session: false }), [
+  // Secouristename must be an email
+  body('email').isEmail(),
+  // password must be at least 5 chars long
+  //body('password',
+  //    "Password should be combination of one uppercase ," +
+  //    " one lower case, " +
+  //    " one digit and min 8 , " +
+  //    "max 20 char long")
+  //.matches("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,20}$", "i")
+], async(req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+      return res.status(400).json({ errors: errors.array() });
+  }
+  
+  await Secouriste.findOne({ email: req.body.email })
+      .then(async profile => {
+          if (!profile||(req.body.email==req.user.email)) {
+
+                    const secouriste = await  Secouriste.findByIdAndUpdate({ _id: req.user.id },  { name: req.body.name,
+                      email: req.body.email,
+                      cin: req.body.cin,
+                      age:req.body.age,
+                      gouvernorat:req.body.gouvernorat,
+                      phone:req.body.phone,}, { new: true }).then((value) => {
+                              //utils.verificationEmail(newSecouriste.email, newSecouriste.verificationCode, newSecouriste._id);
+                              console.log(value) ; 
+                              console.log(req.user);
+                              const payload = {
+                                id: value._id,
+                                name: value.name,
+                                email: value.email,
+                                age:value.age,
+                                phone:value.phone,
+                                cin:value.cin,
+                                gouvernorat:value.gouvernorat,
+                                isAdmin: value.isAdmin,
+                                isActivated:value.isActivated,
+                                isNormalUser:value.isNormalUser
+                            };
+                            jsonwt.sign(
+                                payload,
+                                myKey.secret,
+                                (err, token) => {
+                                    return res.status(200).json({
+                                        Secouriste: payload,
+                                        success: true,
+                                        token: "Bearer " + token
+                                    });
+                                  })
+                          })
+                          .catch(err => {
+                            console.log(err);
+                              return res.status(400).send({ error: 'Cannot update Secouriste with such data !'+err });
+                          });
+          } else {
+              return res.status(404).send({ error: "email already exists... try new one " });
+          }
+      })
+      .catch(err => {
+          console.log("Error is", err.message);
+      });
+});
+
+
+
 /**
  * LOGIN Route
  */
@@ -222,15 +292,19 @@ router.get(
     passport.authenticate("jwt", { session: false }),
     async(req, res) => {
         try {
-            const Secouriste = await SecouristeService.getSecouristeById(req.user.id);
+            const profile = await SecouristeService.getSecouristeById(req.user.id);
 
             const payload = {
-              id: Secouriste.id,
-              name: Secouriste.name,
-              email: Secouriste.email,
-              isAdmin: Secouriste.isAdmin,
-              isActivated:Secouriste.isActivated,
-              isNormalUser:Secouriste.isNormalUser
+              id: profile.id,
+              name: profile.name,
+              email: profile.email,
+              age:profile.age,
+              phone:profile.phone,
+              cin:profile.cin,
+              gouvernorat:profile.gouvernorat,
+              isAdmin: profile.isAdmin,
+              isActivated:profile.isActivated,
+              isNormalUser:profile.isNormalUser
           };
           jsonwt.sign(
               payload,

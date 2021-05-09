@@ -16,6 +16,28 @@ async function sendMessage(data){
         // done
 
 
+async function deletSocketId(socketId){
+            try{
+            let user = await Chat.findById(chatId);  
+            
+            if(chat){ 
+        
+                    if(chat.secouristeId!=senderId){   
+                         let reciever=await  Secouriste.findById(chat.secouristeId)
+                             return reciever.socketId ; 
+                         
+                    }else{
+                      
+                         let reciever= await User.findById(chat.userId) ; 
+                            return reciever.socketId ; 
+                        }
+                         
+                } else { console.log(" chat not found");}
+            }catch(e){
+                console.log(e) ; 
+            }
+        }
+        
  async function getRecieverSocketId(data){
     const chatId=data.chatId ;
     const senderId= data.senderId ; 

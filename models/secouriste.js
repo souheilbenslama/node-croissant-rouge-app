@@ -12,6 +12,10 @@ const SecouristeSchema = mongoose.Schema({
     password: {
         type: String,
         require: true
+    },socketId:{
+        type: String,
+        require: false,
+        default : null
     },
     email: {
         type: String,

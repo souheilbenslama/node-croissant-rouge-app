@@ -14,12 +14,15 @@ const constant = require('../utils/constant');
 const SecouristeService = require('../services/Secouriste.service');
 const { uuid } = require('uuidv4');
 const {User} = require("../models/User");
+var ResetCode = require("../models/ResetCode");
 // Batch Login 
 const csvParser = require('csv-parser');
 const fs = require('fs');
 const multer = require('multer');
 const multer2 = require('multer') ;
 const csv = require('fast-csv');
+const nodemailer = require('nodemailer') ;
+var smtpTransport = require("nodemailer-smtp-transport");
 
 const upload = multer({ dest: 'tmp/csv/' });
 
@@ -302,6 +305,134 @@ router.post("/login",
             });
     });
 
+
+
+ router.post("/forget", function(req,res){
+      Secouriste.findOne({email:req.body.email},function(err,user){
+          if(err){
+              err.message = "user not found";
+              res.status(403).send(err) ;
+
+          }else if(!user){
+                  var error = new Error("mail not found!");
+                  return res.status(401).send(error.message);
+          }else{
+              var transporter = nodemailer.createTransport(smtpTransport({
+                  service:"Gmail",
+                  auth: {
+                      user: "petsi760@gmail.com",
+                      pass: "Wala.Souhail.Marouene"
+                  },
+                  tls: {
+                      rejectUnauthorized: false
+                  }
+              }));
+              var code = Math.floor(Math.random()*899999)+100000;
+              var codeData = {
+                  value:code,
+                  owner:user.email
+              };
+              ResetCode.create(codeData,function(error){ 
+                  if(error){
+                      error.message="code not saved successfully!";
+                      return next(error);
+                  }
+              });
+              var mailOptions = {
+                  from: "petsi760@gmail.com",
+                  to: req.body.email,
+                  subject: "Verification Code",
+                  text: "Your code is "+code
+              };
+              transporter.sendMail(mailOptions, function(err, info){
+                  if (err) {
+                      err.message="mail not sent";
+                      return res.status(407).send(err) ;
+                  }else {
+                      res.send("code sent");
+                  }
+              });
+          }
+      });
+  })
+
+
+
+
+router.post("/verification",function(req,res){
+
+  ResetCode.findOne({value:req.body.code},function(err,code){
+    if(!code){
+  
+      return res.status(400).send("Wrong code");
+      }else{
+        Secouriste.findOne({email:code.owner},function(err,profile){
+              if(err){
+                  err.message="user not found";
+                  return res.status(400).send(err);
+              }else{
+                const payload = {
+                  id: profile.id,
+                  name: profile.name,
+                  email: profile.email,
+                  age:profile.age,
+                  phone:profile.phone,
+                  cin:profile.cin,
+                  photo:profile.photo ,
+                  gouvernorat:profile.gouvernorat,
+                  isAdmin: profile.isAdmin,
+                  isActivated:profile.isActivated,
+                  isNormalUser:profile.isNormalUser
+              };
+              jsonwt.sign(
+                  payload,
+                  myKey.secret,
+                  (err, token) => {
+                      return res.json({
+                          Secouriste: payload,
+                          success: true,
+                          token: "Bearer " + token
+                      });
+                
+                    })
+              }
+          });
+      }
+  });
+})
+
+
+router.post("/reset", passport.authenticate("jwt", { session: false }),function(req,res){
+ 
+  if(req.body.password !== req.body.confirmPassword){
+      var err = new Error("Passwords do not match");
+      return res.status(400).send(err.message);
+  }
+  Secouriste.findById(req.user._id , function(err, user){
+      if(err){
+          return next(err);
+      }
+      else{
+        bcrypt.hash(req.body.password, saltRounds, async(err, hash) => {
+          if (err) {
+              console.log("Error is", err.message);
+              res.status(409).send(err);
+          } else {
+          user.password=hash
+          user.save(function(err){
+              if(err){
+                  return res.send(err);
+              }else{
+                  res.status(200).send("Password updated");
+              }
+          })
+      }})
+  }});
+})
+
+
+
+
 /**
  * GET SECOURISTE PROFILE
  * verified and need only some modifications in returned user attributes
@@ -319,6 +450,7 @@ router.get(
               email: profile.email,
               age:profile.age,
               phone:profile.phone,
+              photo:profile.photo,
               cin:profile.cin,
               gouvernorat:profile.gouvernorat,
               isAdmin: profile.isAdmin,

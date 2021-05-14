@@ -6,7 +6,7 @@ const passport = require('passport');
 const jsonwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const Secouriste = require('../models/Secouriste');
+const {Secouriste} = require('../models/Secouriste');
 const myKey = require("../mysetup/myurl");
 const { body, validationResult } = require('express-validator');
 const utils = require('../utils/utils');
@@ -14,15 +14,28 @@ const constant = require('../utils/constant');
 const SecouristeService = require('../services/Secouriste.service');
 const { uuid } = require('uuidv4');
 const {User} = require("../models/User");
-
-
-
 // Batch Login 
 const csvParser = require('csv-parser');
 const fs = require('fs');
 const multer = require('multer');
+const multer2 = require('multer') ;
 const csv = require('fast-csv');
+
 const upload = multer({ dest: 'tmp/csv/' });
+
+
+var storage = multer2.diskStorage({destination:'public/uploads/images/',
+  filename: (req, file, cb) => {
+      cb(null,Date.now()+"_"+file.originalname );
+  }
+});
+
+var upload2 = multer2({ storage: storage ,limits:{fieldSize:1024*1024*1024*1024*3}});
+
+
+
+
+
 
 
 
@@ -37,7 +50,7 @@ async function createUser(data) {
       gouvernorat:data[4],
       verificationCode: uuid()
   });
-  console.log("///////////////////$$$");
+  
   await Secouriste.findOne({ email: newSec.email })
       .then(async profile => {
           if (!profile) {
@@ -155,7 +168,7 @@ router.post("/signup", [
 
 
 
-router.post("/update",passport.authenticate("jwt", { session: false }), [
+router.post("/update",passport.authenticate("jwt", { session: false }),upload2.single("photo"), [
   // Secouristename must be an email
   body('email').isEmail(),
   // password must be at least 5 chars long
@@ -165,7 +178,9 @@ router.post("/update",passport.authenticate("jwt", { session: false }), [
   //    " one digit and min 8 , " +
   //    "max 20 char long")
   //.matches("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,20}$", "i")
+
 ], async(req, res) => {
+console.log(req.file);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors);
@@ -175,9 +190,11 @@ router.post("/update",passport.authenticate("jwt", { session: false }), [
   await Secouriste.findOne({ email: req.body.email })
       .then(async profile => {
           if (!profile||(req.body.email==req.user.email)) {
-
+            console.log(req.user.photo) ;
+                        
                     const secouriste = await  Secouriste.findByIdAndUpdate({ _id: req.user.id },  { name: req.body.name,
                       email: req.body.email,
+                      photo:(req.file)?"uploads/images/" + req.file.filename:req.user.photo,
                       cin: req.body.cin,
                       age:req.body.age,
                       gouvernorat:req.body.gouvernorat,
@@ -190,6 +207,7 @@ router.post("/update",passport.authenticate("jwt", { session: false }), [
                                 name: value.name,
                                 email: value.email,
                                 age:value.age,
+                                photo:value.photo,
                                 phone:value.phone,
                                 cin:value.cin,
                                 gouvernorat:value.gouvernorat,
@@ -254,6 +272,7 @@ router.post("/login",
                                     age:profile.age,
                                     phone:profile.phone,
                                     cin:profile.cin,
+                                    photo:profile.photo ,
                                     gouvernorat:profile.gouvernorat,
                                     isAdmin: profile.isAdmin,
                                     isActivated:profile.isActivated,

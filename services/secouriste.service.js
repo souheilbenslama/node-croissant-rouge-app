@@ -7,6 +7,7 @@ async function getSecouristeById(id) {
         gouvernorat: secouriste.gouvernorat,
         email: secouriste.email,
         phone: secouriste.phone,
+        photo : secouriste.photo,
         cin:secouriste.cin,
         isAdmin: secouriste.isAdmin,
         age: secouriste.age,

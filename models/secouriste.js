@@ -26,6 +26,10 @@ const SecouristeSchema = mongoose.Schema({
         type: String,
         require: false,
     },
+    photo:{
+        type:String , 
+        default:"images/avatar.png"
+    },
     age: {
         type: Number,
         require: false

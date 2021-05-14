@@ -8,7 +8,13 @@ var mongoose= require('mongoose')  ;
 var socket = require('socket.io') ; 
 var app = express(); 
 var MessageService = require('./services/message_service')
+
+
+
 // database connection 
+
+
+
 mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false  })
     .then(() => console.log("connected to db ...."))
     .catch(err => console.error('could not connect to MongoDb', err));
@@ -116,7 +122,7 @@ io.on('connection',function(socket){
 
     socket.on("alerte",async function(data){
       console.log(data) ; 
-      io.sockets.emit("notify",{"content":"your are doing ok"}) ; 
+      io.sockets.emit("alerte",{"content":"your are doing ok"}) ; 
      
    })
    

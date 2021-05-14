@@ -6,7 +6,7 @@ const UserSchema = mongoose.Schema({
     },
     socketId:{
         type:String , 
-        default:null
+        default:"images/avatar.png"
     }
 }, { timestamps: true });
 

@@ -320,8 +320,8 @@ router.post("/login",
               var transporter = nodemailer.createTransport(smtpTransport({
                   service:"Gmail",
                   auth: {
-                      user: "petsi760@gmail.com",
-                      pass: "Wala.Souhail.Marouene"
+                      user: "croissantrougeapp@gmail.com",
+                      pass: "croissantapp5"
                   },
                   tls: {
                       rejectUnauthorized: false
@@ -339,10 +339,11 @@ router.post("/login",
                   }
               });
               var mailOptions = {
-                  from: "petsi760@gmail.com",
+                  from: "croissantrougeapp@gmail.com",
                   to: req.body.email,
                   subject: "Verification Code",
-                  text: "Your code is "+code
+                  text:  "Vous recevez ceci parce que vous (ou quelqu'un d'autre) avez demandé la réinitialisation du mot de passe de votre compte. \n \n" +
+                  "Veuillez coller ceci dans votre application pour terminer le processus: \n \n" + "Votre code est : "+code
               };
               transporter.sendMail(mailOptions, function(err, info){
                   if (err) {
@@ -402,8 +403,21 @@ router.post("/verification",function(req,res){
 })
 
 
-router.post("/reset", passport.authenticate("jwt", { session: false }),function(req,res){
+router.post("/reset", passport.authenticate("jwt", { session: false }),[// password must be at least 5 chars long
+body('password',
+    "Password should be combination of one uppercase ," +
+    " one lower case, " +
+    " one digit and min 8 , " +
+    "max 20 char long")
+.matches("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,20}$", "i")
+],function(req,res){
  
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+      return res.status(400).json({ errors: errors.array() });
+  }
+
   if(req.body.password !== req.body.confirmPassword){
       var err = new Error("Passwords do not match");
       return res.status(400).send(err.message);

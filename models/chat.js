@@ -18,6 +18,6 @@ const chatSchema= new mongoose.Schema({
         type:[String]
     }
 
-})
+},{timestamps:true})
 
 module.exports = Chat = mongoose.model('Chat', chatSchema);

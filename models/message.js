@@ -6,7 +6,7 @@ const messageSchema= new mongoose.Schema({
       type:String,
       required:true 
   },
-  chatId:{
+  accidentId:{
       type:String,
       required:true
   },
@@ -19,5 +19,5 @@ const messageSchema= new mongoose.Schema({
   required:true}
 })
 
-const Message = mongoose.model("Message",messageSchema) ; 
-exports.Message=Message ; 
+
+module.exports = Message = mongoose.model('Message', messageSchema);

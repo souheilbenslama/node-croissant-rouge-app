@@ -1,12 +1,15 @@
 var express = require('express');
 var router = express.Router();
 
+
 // Authentification imports 
 const passport = require('passport');
 const jsonwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const {Secouriste} = require('../models/Secouriste');
+var app = require('../app');
+
 const myKey = require("../mysetup/myurl");
 const { body, validationResult } = require('express-validator');
 const utils = require('../utils/utils');
@@ -14,6 +17,7 @@ const constant = require('../utils/constant');
 const SecouristeService = require('../services/Secouriste.service');
 const { uuid } = require('uuidv4');
 const {User} = require("../models/User");
+const {Rate} = require("../models/appRate");
 var ResetCode = require("../models/ResetCode");
 // Batch Login 
 const csvParser = require('csv-parser');
@@ -306,6 +310,7 @@ router.post("/login",
     });
 
 
+    /** foreget password route */
 
  router.post("/forget", function(req,res){
       Secouriste.findOne({email:req.body.email},function(err,user){
@@ -358,7 +363,7 @@ router.post("/login",
   })
 
 
-
+/** verify code route */
 
 router.post("/verification",function(req,res){
 
@@ -402,6 +407,7 @@ router.post("/verification",function(req,res){
   });
 })
 
+/** reset password route  */
 
 router.post("/reset", passport.authenticate("jwt", { session: false }),[// password must be at least 5 chars long
 body('password',
@@ -489,21 +495,47 @@ router.get(
     }
 );
 
+
+/*get anonymous user id*/ 
+
+
+router.post(
+  "/anonyme", async(req, res) => {
+      try {
+          const profile = await User.findOne({userDeviceId:req.body.id}) ;
+              if(profile){
+
+                res.status(200).send(profile) ;
+              }else{
+                res.status(400).send("user not found") ;
+              }
+          
+      } catch (error) {
+         console.log(error);
+        return res.status(404).send({ error: 'Profile not found' });
+      }
+  }
+);
+
+
+
 /**
  * Adding a normal User
  */
  router.post(
   "/normalUser",
   async (req, res) => {
+    
     if (!req.body.userid) {
       return res.status(400).send({
         message: "Required field Phone number can not be empty",
       });
     }
-    us =await User.findOne({'userid':req.body.userid } ); 
-    if(us){
+    us =await User.findOne({'userDeviceId':req.body.userid } ); 
+    
+    if(!us){
     const user = new User({
-      userid: req.body.userid,
+      userDeviceId: req.body.userid,
     });
     user
       .save()
@@ -516,11 +548,35 @@ router.get(
         });
       });
     }else{
-      res.status(404).send({
-        message:  "user already exists",
-      });
+      res.status(200).send(us);
     }}
 );
+
+
+/** rating app route */
+
+
+router.post(
+  "/Rate",
+  async (req, res) => {
+    try{
+
+    var old= await  Rate.findOneAndDelete({userId:req.body.id}) ;
+     console.log(old)  ;
+      var rate = new Rate({userId:req.body.id,value: parseInt( req.body.value)}) ;
+      result = await rate.save() ;
+      if(result){
+        res.status(200).send(result) ;
+      }else{
+        res.status(409).send("rate not created") ;
+      }
+    }catch(ex){
+console.log(ex);
+      res.status(407).send(ex) ;
+    }
+    
+    
+  });
 
 
 /**
@@ -549,6 +605,55 @@ router.post(
 );
 
 
+/** route to change a user activation */
+
+router.put(
+  "/activationUser", passport.authenticate("jwt", { session: false }),
+  async(req, res) => {
+      Secouriste.findByIdAndUpdate(req.body.id, {$set: { isActivated: req.body.activated }},{ new: true })
+          .then((user) => {
+            console.log(user);
+              if (!user) {
+                  return res.status(404).send({
+                      message: "no user found",
+                  });
+              }
+              res.status(200).send(user);
+          })
+          .catch((err) => {
+              return res.status(404).send({
+                  message: "error while updating the user",
+              });
+          });
+  }
+);
+
+
+/** route to create an admin  */
+router.put(
+  "/adminuser", passport.authenticate("jwt", { session: false }),
+  async(req, res) => {
+      Secouriste.findByIdAndUpdate(req.body.id, {$set: { isAdmin: req.body.admin }},{ new: true })
+          .then((user) => {
+            console.log(user);
+              if (!user) {
+                  return res.status(404).send({
+                      message: "no user found",
+                  });
+              }
+              res.status(200).send(user);
+          })
+          .catch((err) => {
+              return res.status(404).send({
+                  message: "error while updating the user",
+              });
+          });
+  }
+);
+
+
+
+
 
 
 // The function to get the distance in KM using long and lat
@@ -572,12 +677,14 @@ getDistanceFromLatLonInKm = (lat1,lon1,lat2,lon2) => {
 
 // The function to find the closest free secourists
 SerouristsFinder=  (position ,users) => {
+  
     var lat1 = parseFloat(position.latitude.toString());
     var lon1 = parseFloat(position.longitude.toString());
     us = [] ;
     for(i=0 ; i<users.length ; i++)
     {
-      if(users[i].isFree){
+      if((users[i].isFree)&&(users[i].latitude!=null)&&(users[i].longitude)){
+        
       var lat2 = parseFloat(users[i].latitude.toString());
       var lon2 = parseFloat(users[i].longitude.toString());
       if(getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2)<=1) 
@@ -590,13 +697,19 @@ SerouristsFinder=  (position ,users) => {
 
 // The function to test the route
 findClosestSecourists = (req, res) => {
-  Secouriste.find()
+
+
+  Secouriste.find({isNormalUser:false,isFree:true})
     .sort({ name: -1 })
     .then((users) => {
+      console.log("^^^^^^^^^^^^^^^^");
+      console.log() ;
+      console.log("^^^^^^^^^^^^^^^^");
       // To test the route we are going to pass users[6] and try to find the closest users
-      us= SerouristsFinder(users[6], users) ;
-      console.log(us.length + " secourists are found ,the closest to  " + users[6].email + " is " + us[0].email + " and "+ us[1].email);
-      res.status(200).send(users);
+      us= SerouristsFinder({latitude:req.body.latitude,longitude:req.body.longitude}, users) ;
+      console.log(us) ;
+      console.log(us.length + " secourists are found ,the closest to  " + users[0].email + " is " + us[0].email + " and "+ us[0].email);
+      res.status(200).send(us);
     })
     .catch((err) => {
       res.status(500).send({
@@ -612,7 +725,7 @@ router.get("/test", findClosestSecourists);
 //verified
 router.get('/list', async (req,res)=> {
   try{
-      const results = await Secouriste.find();
+      const results = await Secouriste.find({isNormalUser:false});
       console.log("results = " + results);
       res.send(results);
   }
@@ -634,7 +747,7 @@ router.get('/list', async (req,res)=> {
             });
           }
 	          var socketId = req.body.socketId ;
-            User.findByIdAndUpdate(req.query.id , {socketId: socketId}, { new: true })
+            User.findOneAndUpdate({userDeviceId:req.body.deviceId} , {socketId: socketId}, { new: true })
               .then((user) => {
                 if (!user) {
                   return res.status(404).send({
@@ -649,7 +762,6 @@ router.get('/list', async (req,res)=> {
                 });
               });
           })
-
 
 
 /**

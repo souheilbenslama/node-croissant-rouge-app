@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
+
 const AccidentSchema = mongoose.Schema({
+    
     id_temoin: {
         type: String,
         required: true,
@@ -9,40 +11,40 @@ const AccidentSchema = mongoose.Schema({
         type: String,
         required: false,
     },
-
-    protectionDesc: {
-        type: String,
-        required: true,
+    cas:{
+        type:String , 
+        required : true 
     },
-
-    respirationDesc: {
-        type: String,
-        required: true,
+    description:{
+        type:String 
     },
+    needSecouriste:{
+         type :Boolean ,
+         default :false
 
-    hemorragieDesc: {
-        type: String,
-        required: true,
     },
-
-    conscienceDesc: {
-        type: String,
-        required: true,
+    localite:{
+        type:String
+    }
+    ,
+    address:{
+        type:String,
+        default:""
     },
-
     status: {
         type: String,
         required: true,
-        default: "in progress"
+        default: "finished"
     },
     longitude: {
         type: Number,
-        required: true,
+    //    required: true,
     },
     latitude:{
         type: Number,
-        required: true,
+      //  required: true,
     }
+
 }, { timestamps: true });
 
 module.exports = Accident = mongoose.model('Accident', AccidentSchema);

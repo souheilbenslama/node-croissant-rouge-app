@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const UserSchema = mongoose.Schema({
-    userid: {
+    userDeviceId: {
         type: String,
         require: false,
     },
     socketId:{
         type:String , 
-        default:"images/avatar.png"
+        default: null
     }
 }, { timestamps: true });
 

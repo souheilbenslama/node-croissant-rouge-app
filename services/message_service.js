@@ -2,7 +2,7 @@ var mongoose=require('mongoose') ;
 //const Message = require('../models/message') ; 
 const Accident= require("../models/accident"); 
 const Secouriste = require('../models/secouriste');
-const {User} = require('../models/User');
+const User = require('../models/user');
 
 
 // adding message to data base

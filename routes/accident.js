@@ -5,7 +5,7 @@ const Accident= require("../models/accident");
 
 var mongoose = require('mongoose');
 const passport = require('passport');
-const {Secouriste} = require('../models/Secouriste');
+const Secouriste = require('../models/secouriste');
 var MessageService = require('../services/message_service');
 
 

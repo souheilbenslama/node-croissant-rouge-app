@@ -1,4 +1,4 @@
-const {Secouriste} = require('../models/Secouriste');
+const Secouriste = require('../models/secouriste');
 async function getSecouristeById(id) {
     const secouriste = await Secouriste.findOne({'_id': id});
     return {

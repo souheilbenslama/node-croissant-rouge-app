@@ -1,6 +1,6 @@
 var express = require('express');
 	var router = express.Router();
-  const {Secouriste} = require('../models/Secouriste');
+  const Secouriste = require('../models/secouriste');
   const passport = require('passport');
 
 	//updating rescuer's disponibility 

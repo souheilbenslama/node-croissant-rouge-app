@@ -7,7 +7,7 @@ const passport = require('passport');
 const jsonwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const {Secouriste} = require('../models/Secouriste');
+const Secouriste = require('../models/secouriste');
 var app = require('../app');
 
 const myKey = require("../mysetup/myurl");

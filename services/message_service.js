@@ -1,7 +1,7 @@
 var mongoose=require('mongoose') ; 
 //const Message = require('../models/message') ; 
 const Accident= require("../models/accident"); 
-const {Secouriste} = require('../models/Secouriste');
+const Secouriste = require('../models/secouriste');
 const {User} = require('../models/User');
 
 

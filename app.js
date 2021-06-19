@@ -7,15 +7,9 @@ var logger = require('morgan');
 var mongoose= require('mongoose')  ; 
 var socket = require('socket.io') ; 
 var app = express(); 
-
-
-
-
+var MessageService = require('./services/message_service')
 // database connection 
-
-
-
-mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/croissant_rouge", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false  })
+mongoose.connect("mongodb+srv://croissant:rouge@cluster0.hxuuy.mongodb.net/test", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false  })
     .then(() => console.log("connected to db ...."))
     .catch(err => console.error('could not connect to MongoDb', err));
 const passport = require('passport');
@@ -51,8 +45,6 @@ app.use('/accident', accidentRouter);
 app.use(function(req, res, next) {
     next(createError(404));
 });
-
-var name = "souheil" ;
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -105,20 +97,27 @@ io.on('connection',function(socket){
     console.log("connection"+socket.id);
   // listenning for the event chat 
   socket.on("chat", async function(message)  {
-    MessageService.sendMessage(message); //  saving the message  
+    
+    MessageService.sendMessage(message); //  saving the message
+    
     const recieverSocketId= await MessageService.getRecieverSocketId(message) ; 
-    if(recieverSocketId!=null)
+    
     io.to(recieverSocketId).emit("chat",message) ; 
+  
   });
   
+  
+
   // listenning for the disconnection event 
   socket.on('disconnect', async function(message){
+   
     console.log("disconnected"+socket.id) ;
   })
 
     socket.on("alerte",async function(data){
       console.log(data) ; 
-      io.sockets.emit("alerte",{"content":"your are doing ok"}) ; 
+      io.sockets.emit("notify",{"content":"your are doing ok"}) ; 
+     
    })
    
 
@@ -126,20 +125,6 @@ io.on('connection',function(socket){
 
 
 
-
-async function sendSecouristeAlerte(secouristes,accident){
-    const socketList= new Array ;
-    secouristes.forEach(element => {
-        socketList.push(element.socketId);
-        
-    });
-
-socketList.forEach((element)=>{
-
-    io.to(element).emit("alerte",accident);
-}) ;
-    
-}
 
   // messages transfert
  /**
@@ -202,7 +187,6 @@ function onListening() {
     debug('Listening on ' + bind);
 }
 
-module.exports.name = name ;
-module.exports.sendSecouristeAlerte = sendSecouristeAlerte ;
-module.exports = {app,io,sendSecouristeAlerte,name};
+
+module.exports = app;
 

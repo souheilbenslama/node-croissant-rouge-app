@@ -61,7 +61,7 @@ app.use(function(err, req, res, next) {
 var debug = require('debug')('node-croissant-rouge-app:server');
 var http = require('http');
 var socket = require('socket.io') ; 
-const { Message } = require('./models/Message');
+const  Message  = require('./models/message');
 
 /**
  * Get port from environment and store in Express.

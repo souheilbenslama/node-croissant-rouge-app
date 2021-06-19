@@ -16,7 +16,7 @@ const utils = require('../utils/utils');
 const constant = require('../utils/constant');
 const SecouristeService = require('../services/secouriste.service');
 const { uuid } = require('uuidv4');
-const {User} = require("../models/User");
+const User = require("../models/user");
 const {Rate} = require("../models/appRate");
 var ResetCode = require("../models/ResetCode");
 // Batch Login 

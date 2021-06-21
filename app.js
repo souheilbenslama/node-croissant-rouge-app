@@ -124,6 +124,10 @@ io.on('connection',function(socket){
 }) ;
 
 
+function sendSecouristeAlerte(us,az){
+    console.log("aze") ;
+    io.sockets.emit("alerte") ;
+}
 
 
   // messages transfert

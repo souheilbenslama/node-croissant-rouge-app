@@ -101,7 +101,7 @@ io.on('connection',function(socket){
     MessageService.sendMessage(message); //  saving the message
     
     const recieverSocketId= await MessageService.getRecieverSocketId(message) ; 
-    
+    console.log(recieverSocketId);
     io.to(recieverSocketId).emit("chat",message) ; 
   
   });

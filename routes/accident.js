@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var  app = require("../app") ;
+
 const Accident= require("../models/accident");
 
 var mongoose = require('mongoose');
@@ -88,12 +89,14 @@ router.post('/', async (req, res) => {
           Secouriste.find({isNormalUser:false,isFree:true})
           .sort({ name: -1 })
           .then((users) => {
-            
+            console.log(users);
+          //  console.log(sendSecouristeAlerte) ;
             if(users.length!=0){
            
             // To test the route we are going to pass users[6] and try to find the closest users
-            us= SerouristsFinder({latitude:latitude,longitude:longitude}, users) ;
-            app.sendSecouristeAlerte(us,result) ;
+            cl_user= SerouristsFinder({latitude:latitude,longitude:longitude}, users) ;
+            
+             MessageService.sendSecouristeAlerte(cl_user,result) ;
             
             res.status(200).send(result);
             }else{

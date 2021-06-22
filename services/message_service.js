@@ -5,6 +5,20 @@ const {Secouriste} = require('../models/secouriste');
 const User = require('../models/user');
 
 
+
+function sendSecouristeAlerte(users,accident){
+
+    var io = require("../app.js").io ;
+    console.log("////////////////") ; 
+    console.log(users) ;
+    console.log("////////////////") ; 
+    console.log(accident) ;
+        console.log("////////////////") ; 
+    io.sockets.emit("alerte") ;
+    console.log(users[0]["socketId"]) ;
+    io.to(users[0]["socketId"]).emit("alerte",{"accident":accident}) ;
+}
+
 // adding message to data base
 async function sendMessage(data){
     try{
@@ -16,7 +30,7 @@ async function sendMessage(data){
         // done
 
 
-async function deletSocketId(socketId){
+async function deleteSocketId(socketId){
             try{
             let user = await Chat.findById(chatId);  
             
@@ -70,4 +84,4 @@ async function deletSocketId(socketId){
 
 
 
-module.exports={sendMessage , getRecieverSocketId,}
+module.exports={sendMessage , getRecieverSocketId,sendSecouristeAlerte}

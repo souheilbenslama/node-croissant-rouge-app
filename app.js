@@ -124,10 +124,7 @@ io.on('connection',function(socket){
 }) ;
 
 
-function sendSecouristeAlerte(us,az){
-    console.log("aze") ;
-    io.sockets.emit("alerte") ;
-}
+
 
 
   // messages transfert
@@ -191,6 +188,5 @@ function onListening() {
     debug('Listening on ' + bind);
 }
 
-
-module.exports = app;
+module.exports = {io:io,app:app};
 

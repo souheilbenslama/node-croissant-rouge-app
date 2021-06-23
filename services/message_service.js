@@ -9,11 +9,6 @@ const {User} = require('../models/user');
 function sendSecouristeAlerte(users,accident){
 
     var io = require("../app.js").io ;
-    console.log("////////////////") ; 
-    console.log(users) ;
-    console.log("////////////////") ; 
-    console.log(accident) ;
-        console.log("////////////////") ; 
     io.sockets.emit("alerte") ;
     console.log(users[0]["socketId"]) ;
     io.to(users[0]["socketId"]).emit("alerte",{"accident":accident}) ;
